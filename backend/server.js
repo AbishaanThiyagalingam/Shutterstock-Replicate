@@ -28,7 +28,7 @@ app.use((req, res, next) => {
   const traceId = req.headers['x-trace-id'];
   req.traceId = traceId || uuidv4();
 
-  logger.info(`(Request Received to System Service) Trace ID: ${req.traceId} , Method: ${req.method}, URL: ${req.url}, Body Params: ${JSON.stringify(req.body)}`);
+  logger.info(`(Request Received to Shutterstock-Replicate Service) Trace ID: ${req.traceId} , Method: ${req.method}, URL: ${req.url}, Body Params: ${JSON.stringify(req.body)}`);
 
   const originalEnd = res.end;
   const chunks = [];
