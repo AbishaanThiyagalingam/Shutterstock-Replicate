@@ -4,11 +4,15 @@ const bodyParser = require('body-parser');
 const logger = require('./logger');
 const { v4: uuidv4 } = require('uuid');
 const cors = require('cors');
+const passport = require('passport');
+const session = require('express-session');
 const { getReasonPhrase } = require('./utils/util');
 const connectToDatabase = require('./config/database'); // Import database config
+const authRoutes = require('./routes/authRoutes'); // Import auth routes
+require('./config/passportConfig'); // Import passport configuration
 
 const app = express();
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 8080;
 
 // Connect to MongoDB
 connectToDatabase();
@@ -21,6 +25,20 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(bodyParser.json());
 
+// Session configuration
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || 'default_secret',
+    resave: false,
+    saveUninitialized: true,
+  })
+);
+
+// Initialize Passport.js
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Trace ID middleware
 app.use((req, res, next) => {
   const traceId = req.headers['x-trace-id'];
   req.traceId = traceId || uuidv4();
@@ -57,10 +75,15 @@ app.use((req, res, next) => {
   next();
 });
 
+// Auth routes for Google Login and role-based services
+app.use('/auth', authRoutes);
+
+// Catch 404 errors
 app.use((req, res, _next) => {
   res.status(404).send(req.t('notFound'));
 });
 
+// Start the server
 app.listen(port, () => {
   logger.info(`Shutterstock-Replicate Server listening on port ${port}`);
 });
