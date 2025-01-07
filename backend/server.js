@@ -10,7 +10,6 @@ const connectToDatabase = require('./config/database'); // Import database confi
 const app = express();
 const port = process.env.PORT || 8080;
 
-// Connect to MongoDB
 connectToDatabase();
 
 const corsOptions = {
