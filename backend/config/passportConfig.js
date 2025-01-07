@@ -7,31 +7,38 @@ passport.use(
         {
             clientID: process.env.GOOGLE_CLIENT_ID,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-            callbackURL: 'http://localhost:8080/auth/google/callback', // Ensure this matches your Google Developer Console configuration
+            callbackURL: 'http://localhost:8080/auth/google/callback',
         },
         async (accessToken, refreshToken, profile, done) => {
-            const { id, displayName, emails } = profile;
-            const email = emails[0].value;
-
             try {
-                // Check if user exists in database
+                const { id, displayName, emails } = profile;
+                const email = emails[0].value;
+
+                // Find or create user in database
                 let user = await User.findOne({ googleId: id });
                 if (!user) {
-                    // If not, create a new user
-                    user = await User.create({
-                        googleId: id,
-                        name: displayName,
-                        email,
-                        role: 'buyer', // Default role
-                    });
+                    user = await User.create({ googleId: id, name: displayName, email, role: 'buyer' });
                 }
-                return done(null, user);
+
+                done(null, user); // Attach user to req.user
             } catch (error) {
-                return done(error, null);
+                done(error, null); // Handle error
             }
         }
     )
 );
 
-passport.serializeUser((user, done) => done(null, user.id));
-passport.deserializeUser((id, done) => User.findById(id).then(user => done(null, user)));
+// Serialize user to store user ID in session
+passport.serializeUser((user, done) => {
+    done(null, user.id);
+});
+
+// Deserialize user to retrieve user from database
+passport.deserializeUser(async (id, done) => {
+    try {
+        const user = await User.findById(id);
+        done(null, user);
+    } catch (error) {
+        done(error, null);
+    }
+});

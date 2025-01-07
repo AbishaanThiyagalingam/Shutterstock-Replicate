@@ -15,9 +15,12 @@ const port = process.env.PORT || 8080;
 
 connectToDatabase();
 
+
+// Configure CORS
 const corsOptions = {
-  origin: '*',
-  optionsSuccessStatus: 200,
+  origin: 'http://localhost:3000', // Allow requests from your frontend
+  methods: 'GET,POST,PUT,DELETE',
+  credentials: true, // Allow cookies or authorization headers
 };
 
 app.use(cors(corsOptions));

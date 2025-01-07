@@ -5,16 +5,25 @@ const User = require('../models/User');
 // Handle Google login route
 exports.googleLogin = passport.authenticate('google', { scope: ['profile', 'email'] });
 
-// Handle Google callback
-exports.googleCallback = passport.authenticate('google', { failureRedirect: '/' }, async (req, res) => {
-    try {
-        const token = jwt.sign({ id: req.user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-        res.redirect(`http://localhost:3000?token=${token}`); // Send token to frontend
-    } catch (error) {
-        console.error('Error generating token:', error);
-        res.status(500).json({ message: 'An error occurred while logging in.' });
-    }
-});
+exports.googleCallback = (req, res, next) => {
+    passport.authenticate('google', async (err, user) => {
+        if (err || !user) {
+            console.error('Authentication error:', err);
+            return res.status(401).json({ message: 'Authentication failed' });
+        }
+
+        try {
+            // Generate JWT
+            const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+            // Redirect with token
+            res.redirect(`http://localhost:3000?token=${token}`);
+        } catch (error) {
+            console.error('Error generating token:', error);
+            res.status(500).json({ message: 'An error occurred while logging in.' });
+        }
+    })(req, res, next);
+};
 
 // Get user profile
 exports.getUserProfile = async (req, res) => {
