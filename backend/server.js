@@ -8,7 +8,7 @@ const { getReasonPhrase } = require('./utils/util');
 const connectToDatabase = require('./config/database'); // Import database config
 
 const app = express();
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 8080;
 
 // Connect to MongoDB
 connectToDatabase();
