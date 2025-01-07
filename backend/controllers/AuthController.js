@@ -6,21 +6,43 @@ const User = require('../models/User');
 exports.googleLogin = passport.authenticate('google', { scope: ['profile', 'email'] });
 
 exports.googleCallback = (req, res, next) => {
-    passport.authenticate('google', async (err, user) => {
-        if (err || !user) {
+    passport.authenticate('google', async (err, profile) => {
+        if (err || !profile) {
             console.error('Authentication error:', err);
             return res.status(401).json({ message: 'Authentication failed' });
         }
 
+        const { id: googleId, displayName: name, emails } = profile;
+        const email = emails[0]?.value;
+
         try {
+            // Check if the user already exists
+            let user = await User.findOne({ googleId });
+
+            if (!user) {
+                // If user doesn't exist, create a new user with timestamps
+                user = new User({
+                    googleId,
+                    name,
+                    email,
+                    createdAt: Date.now(),
+                    updatedAt: Date.now(),
+                });
+                await user.save();
+            } else {
+                // Update the `updatedAt` field when the user logs in again
+                user.updatedAt = Date.now();
+                await user.save();
+            }
+
             // Generate JWT
             const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
             // Redirect with token
             res.redirect(`http://localhost:3000?token=${token}`);
         } catch (error) {
-            console.error('Error generating token:', error);
-            res.status(500).json({ message: 'An error occurred while logging in.' });
+            console.error('Error during Google login callback:', error);
+            res.status(500).json({ message: 'An error occurred during login.' });
         }
     })(req, res, next);
 };
