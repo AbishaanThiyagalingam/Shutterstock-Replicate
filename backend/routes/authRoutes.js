@@ -4,16 +4,9 @@ const authMiddleware = require('../middleware/Auth'); // Authentication middlewa
 
 const router = express.Router();
 
-// Google login route
 router.get('/google', authController.googleLogin);
-
-// Google callback route
 router.get('/google/callback', authController.googleCallback);
-
-// Get user profile
-router.get('/profile', authMiddleware, authController.getUserProfile);
-
-// Submit seller details and switch role
-router.post('/become-seller', authMiddleware, authController.becomeSeller);
+router.get('/profile', authMiddleware.authenticate, authController.getUserProfile);
+router.post('/become-seller', authMiddleware.authenticate, authController.becomeSeller);
 
 module.exports = router;

@@ -6,3 +6,5 @@
 # Log files
 /logs
 *.log
+
+.env
