@@ -8,7 +8,7 @@ const router = express.Router();
 router.get('/google', authController.googleLogin);
 
 // Google callback route
-router.get('/google/callback', authController.googleCallback, authController.redirectToProfile);
+router.get('/google/callback', authController.googleCallback);
 
 // Get user profile
 router.get('/profile', authMiddleware, authController.getUserProfile);
