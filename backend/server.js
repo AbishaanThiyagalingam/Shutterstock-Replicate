@@ -8,9 +8,8 @@ const passport = require('passport');
 const session = require('express-session');
 const { getReasonPhrase } = require('./utils/util');
 const connectToDatabase = require('./config/database'); // Import database config
-const authRoutes = require('./routes/authRoutes'); // Import auth routes
 require('./config/passportConfig'); // Import passport configuration
-
+const authRoutes = require('./routes/authRoutes');
 const app = express();
 const port = process.env.PORT || 8080;
 

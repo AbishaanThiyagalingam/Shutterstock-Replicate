@@ -1,27 +1,35 @@
-import React, { useEffect, useState } from 'react';
+// src/components/Profile.js
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const Profile = () => {
     const [user, setUser] = useState(null);
 
     useEffect(() => {
-        axios.get('http://localhost:8080/auth/profile', { withCredentials: true })
-            .then(response => setUser(response.data))
-            .catch(err => console.log(err));
+        const fetchUserProfile = async () => {
+            try {
+                const response = await axios.get('http://localhost:8080/auth/profile', {
+                    withCredentials: true, // Ensures cookies are sent for session-based auth
+                });
+                setUser(response.data);
+            } catch (error) {
+                console.error('Error fetching profile:', error);
+            }
+        };
+
+        fetchUserProfile();
     }, []);
+
+    if (!user) {
+        return <p>Loading...</p>;
+    }
 
     return (
         <div>
-            <h1>Profile</h1>
-            {user ? (
-                <div>
-                    <p>Name: {user.name}</p>
-                    <p>Email: {user.email}</p>
-                    <p>Role: {user.role}</p>
-                </div>
-            ) : (
-                <p>Loading...</p>
-            )}
+            <h2>Profile</h2>
+            <p><strong>Name:</strong> {user.name}</p>
+            <p><strong>Email:</strong> {user.email}</p>
+            <p><strong>Role:</strong> {user.role}</p>
         </div>
     );
 };
