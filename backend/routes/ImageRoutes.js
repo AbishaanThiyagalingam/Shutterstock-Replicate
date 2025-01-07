@@ -1,9 +1,8 @@
-// routes/imageRoutes.js
 const express = require("express");
 const router = express.Router();
 const imageController = require("../controllers/ImageController");
 const multer = require("multer");
-const authenticate = require("../middleware/Auth"); // Assuming authentication middleware
+const authenticate = require("../middleware/Auth");
 const path = require("path");
 
 const storage = multer.diskStorage({
@@ -11,7 +10,7 @@ const storage = multer.diskStorage({
     cb(null, "uploads/images/");
   },
   filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname)); // Use current timestamp to avoid filename collisions
+    cb(null, Date.now() + path.extname(file.originalname));
   },
 });
 

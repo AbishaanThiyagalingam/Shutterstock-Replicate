@@ -12,7 +12,7 @@ const categorySchema = new mongoose.Schema(
       required: true,
     },
     thumbnail: {
-      type: String, // Store path to the image
+      type: String,
       required: false,
     },
     createdAt: {

@@ -7,8 +7,8 @@ const cors = require('cors');
 const passport = require('passport');
 const session = require('express-session');
 const { getReasonPhrase } = require('./utils/util');
-const connectToDatabase = require('./config/database'); // Import database config
-require('./config/passportConfig'); // Import passport configuration
+const connectToDatabase = require('./config/database');
+require('./config/passportConfig');
 const authRoutes = require('./routes/AuthRoutes');
 const imageRoutes = require('./routes/ImageRoutes');
 const categoryRoutes = require('./routes/CategoryRoutes');
