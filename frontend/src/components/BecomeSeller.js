@@ -1,14 +1,40 @@
-// src/components/BecomeSeller.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const BecomeSeller = () => {
+    const [user, setUser] = useState(null);
+    const [error, setError] = useState('');
     const [formData, setFormData] = useState({
         bankName: '',
         accountNumber: '',
         ifscCode: '',
     });
     const [message, setMessage] = useState('');
+
+    // Fetch user profile on component mount
+    useEffect(() => {
+        const fetchUserProfile = async () => {
+            try {
+                const token = localStorage.getItem('token'); // Get the token from localStorage
+
+                if (!token) {
+                    setError('Unauthorized: No token provided');
+                    return;
+                }
+
+                const response = await axios.get('http://localhost:8080/auth/profile', {
+                    headers: {
+                        Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+                    },
+                });
+                setUser(response.data);
+            } catch (err) {
+                setError(err.response?.data?.message || 'An error occurred');
+            }
+        };
+
+        fetchUserProfile();
+    }, []);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -18,16 +44,32 @@ const BecomeSeller = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
+            const token = localStorage.getItem('token'); // Get the token from localStorage
+
+            if (!token) {
+                setMessage('Unauthorized: No token provided');
+                return;
+            }
+
             const response = await axios.post(
                 'http://localhost:8080/auth/become-seller',
                 formData,
-                { withCredentials: true } // Ensures cookies are sent
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+                    },
+                }
             );
+
             setMessage(response.data.message);
         } catch (error) {
             setMessage(error.response?.data?.message || 'An error occurred.');
         }
     };
+
+    if (error) {
+        return <p>{error}</p>;
+    }
 
     return (
         <div>
