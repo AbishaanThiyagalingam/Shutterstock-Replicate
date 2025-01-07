@@ -18,10 +18,10 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 router.post("/upload", authenticate.authenticateSeller, upload.single("image"), imageController.uploadImage);
-router.get("/images", imageController.getAllImages);
-router.get("/images/category/:categoryId", imageController.getImagesByCategory);
-router.get("/images/:id", imageController.getImageById);
-router.put("/images/:id", authenticate.authenticateSeller, imageController.updateImage);
-router.delete("/images/:id", authenticate.authenticateSeller, imageController.deleteImage);
+router.get("/", imageController.getAllImages);
+router.get("/category/:categoryId", imageController.getImagesByCategory);
+router.get("/:id", imageController.getImageById);
+router.put("/:id", authenticate.authenticateSeller, imageController.updateImage);
+router.delete("/:id", authenticate.authenticateSeller, imageController.deleteImage);
 
 module.exports = router;

@@ -4,32 +4,45 @@ const fs = require("fs");
 const Image = require("../models/Image");
 const Category = require("../models/Category");
 
+// Ensure upload directory exists
+const uploadDir = path.join(__dirname, '../uploads/images');
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+}
+
 // Create a new image
 exports.uploadImage = async (req, res) => {
-  const { title, description, price, categories } = req.body;
-  const uploadedBy = req.user.id; // Assuming you're using JWT authentication
+    const { title, description, price, categories } = req.body;
+    const uploadedBy = req.user.id; // Assuming JWT authentication is in use
 
-  try {
-    if (!req.file) {
-      return res.status(400).json({ message: "No file uploaded" });
+    try {
+        // Validate file upload
+        if (!req.file) {
+            return res.status(400).json({ message: 'No file uploaded' });
+        }
+
+        // Validate categories
+        if (!categories || categories.length === 0) {
+            return res.status(400).json({ message: 'At least one category must be selected.' });
+        }
+
+        // Save file path
+        const imagePath = path.join(uploadDir, req.file.filename);
+
+        const newImage = new Image({
+            title,
+            description,
+            price,
+            imagePath,
+            uploadedBy,
+            categories: Array.isArray(categories) ? categories : [categories], // Ensure it's an array
+        });
+
+        await newImage.save();
+        res.status(201).json({ message: 'Image uploaded successfully!', image: newImage });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
-
-    const imagePath = path.join(__dirname, "../uploads/images", req.file.filename);
-
-    const newImage = new Image({
-      title,
-      description,
-      price,
-      imagePath,
-      uploadedBy,
-      categories,
-    });
-
-    await newImage.save();
-    res.status(201).json(newImage);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
 };
 
 // Get all images
