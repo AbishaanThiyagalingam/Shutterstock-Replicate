@@ -1,11 +1,28 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
 
 const userSchema = new mongoose.Schema(
     {
-        googleId: { type: String, required: true, unique: true },
-        name: { type: String, required: true },
-        email: { type: String, required: true, unique: true },
-        role: { type: String, default: 'buyer' },
+        googleId: { 
+            type: String, 
+            unique: true 
+        },
+        name: { 
+            type: String, 
+            required: true 
+        },
+        email: { 
+            type: String, 
+            required: true, 
+            unique: true 
+        },
+        password: { 
+            type: String 
+        },
+        role: { 
+            type: String, 
+            default: 'buyer' 
+        },
         sellerDetails: {
             bankName: { type: String },
             accountNumber: { type: String },
@@ -20,9 +37,16 @@ const userSchema = new mongoose.Schema(
             default: Date.now,
         },
     },
-    {
-        timestamps: true, // Ensures createdAt and updatedAt are automatically managed
-    }
+    { timestamps: true }
 );
 
+// Hash password before saving
+userSchema.pre('save', async function (next) {
+    if (this.isModified('password')) {
+        this.password = await bcrypt.hash(this.password, 10);
+    }
+    next();
+});
+
 module.exports = mongoose.model('User', userSchema);
+

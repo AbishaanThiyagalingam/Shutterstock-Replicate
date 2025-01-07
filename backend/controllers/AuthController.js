@@ -1,6 +1,7 @@
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const bcrypt = require('bcrypt');
 
 // Handle Google login route
 exports.googleLogin = passport.authenticate('google', { scope: ['profile', 'email'] });
@@ -61,5 +62,61 @@ exports.becomeSeller = async (req, res) => {
     } catch (error) {
         console.error('Error updating user:', error);
         res.status(500).json({ message: 'An error occurred while processing your request.' });
+    }
+};
+
+// Register user
+exports.register = async (req, res) => {
+    const { email, password, name } = req.body;
+
+    try {
+        // Check if email already exists
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            if (existingUser.googleId) {
+                // If the email is linked to a Google account
+                return res.status(400).json({ 
+                    message: 'An account with this email is already linked to Google login. Please use Google to log in.' 
+                });
+            } else {
+                // If the email is linked to a regular account
+                return res.status(400).json({ 
+                    message: 'An account with this email already exists. Please log in instead.' 
+                });
+            }
+        }
+
+        // Create a new user
+        const user = new User({ email, password, name });
+        await user.save();
+
+        res.status(201).json({ message: 'User registered successfully!' });
+    } catch (error) {
+        console.error('Error registering user:', error);
+        res.status(500).json({ message: 'An error occurred while registering.' });
+    }
+};
+
+// Login user
+exports.login = async (req, res) => {
+    const { email, password } = req.body;
+
+    try {
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found.' });
+        }
+
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            return res.status(400).json({ message: 'Invalid credentials.' });
+        }
+
+        // Generate JWT
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        res.status(200).json({ token, user: { id: user._id, email: user.email, role: user.role } });
+    } catch (error) {
+        console.error('Error logging in:', error);
+        res.status(500).json({ message: 'An error occurred while logging in.' });
     }
 };
