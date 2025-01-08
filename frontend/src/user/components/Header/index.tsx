@@ -27,8 +27,8 @@ const Header = () => {
   }, []);
 
   // Submenu handler
-  const [openIndex, setOpenIndex] = useState(-1);
-  const handleSubmenu = (index) => {
+  const [openIndex, setOpenIndex] = useState<number>(-1);
+  const handleSubmenu = (index: number) => {
     if (openIndex === index) {
       setOpenIndex(-1);
     } else {
@@ -142,9 +142,9 @@ const Header = () => {
                                   openIndex === index ? "block" : "hidden"
                                 }`}
                               >
-                                {menuItem.submenu.map((submenuItem, index) => (
+                                {menuItem.submenu?.map((submenuItem, index) => (
                                   <Link
-                                    to={submenuItem.path}
+                                    to={submenuItem.path || "#"} 
                                     key={index}
                                     className="block rounded py-2.5 text-sm text-white/70 hover:text-white dark:text-white/70 dark:hover:text-white lg:px-3"
                                   >
