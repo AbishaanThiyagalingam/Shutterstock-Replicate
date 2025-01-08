@@ -10,17 +10,20 @@
 
 // App.tsx
 import React from "react";
-import Header from "./user/components/Header";
-import Footer from "./user/components/Footer";
+import { BrowserRouter as Router } from "react-router-dom";
+import Header from "./user/components/Header/index";
+import Footer from "./user/components/Footer/index";
 import Home from "./user/pages/Home";
 
 const App: React.FC = () => {
   return (
-    <div>
-      <Header />
-      <Home />
-      <Footer />
-    </div>
+    <Router>
+      <div>
+        <Header />
+        <Home />
+        <Footer />
+      </div>
+    </Router>
   );
 };
 
