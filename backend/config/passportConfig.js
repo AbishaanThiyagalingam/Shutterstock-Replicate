@@ -9,15 +9,24 @@ passport.use(
         {
             clientID: process.env.GOOGLE_CLIENT_ID,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-            callbackURL: 'http://localhost:8080/auth/google/callback',
+            callbackURL: `${process.env.BASE_URL}/auth/google/callback`,
         },
         async (accessToken, refreshToken, profile, done) => {
             try {
                 const { id, displayName, emails } = profile;
                 const email = emails[0].value;
 
-                let user = await User.findOne({ googleId: id });
-                if (!user) {
+                // Check if a user exists with this email
+                let user = await User.findOne({ email });
+
+                if (user) {
+                    // If user exists but does not have Google ID, link it
+                    if (!user.googleId) {
+                        user.googleId = id;
+                        await user.save();
+                    }
+                } else {
+                    // Create a new user if no account exists
                     user = await User.create({
                         googleId: id,
                         name: displayName,
@@ -25,6 +34,7 @@ passport.use(
                         role: 'buyer',
                     });
                 }
+
                 done(null, user);
             } catch (error) {
                 done(error, null);
@@ -39,7 +49,7 @@ passport.use(
         {
             clientID: process.env.FACEBOOK_APP_ID,
             clientSecret: process.env.FACEBOOK_APP_SECRET,
-            callbackURL: 'http://localhost:8080/auth/facebook/callback',
+            callbackURL: `${process.env.BASE_URL}/auth/facebook/callback`,
             profileFields: ['id', 'displayName', 'emails'],
         },
         async (accessToken, refreshToken, profile, done) => {
@@ -47,8 +57,21 @@ passport.use(
                 const { id, displayName, emails } = profile;
                 const email = emails ? emails[0].value : null;
 
-                let user = await User.findOne({ facebookId: id });
-                if (!user) {
+                if (!email) {
+                    return done(new Error('Facebook did not provide an email address'), null);
+                }
+
+                // Check if a user exists with this email
+                let user = await User.findOne({ email });
+
+                if (user) {
+                    // If user exists but does not have Facebook ID, link it
+                    if (!user.facebookId) {
+                        user.facebookId = id;
+                        await user.save();
+                    }
+                } else {
+                    // Create a new user if no account exists
                     user = await User.create({
                         facebookId: id,
                         name: displayName,
@@ -56,6 +79,7 @@ passport.use(
                         role: 'buyer',
                     });
                 }
+
                 done(null, user);
             } catch (error) {
                 done(error, null);
