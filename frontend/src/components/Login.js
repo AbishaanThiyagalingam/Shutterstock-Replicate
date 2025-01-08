@@ -22,10 +22,16 @@ const Login = () => {
         window.location.href = 'http://localhost:8080/auth/google';
     };
 
+    const handleFacebookLogin = () => {
+        // Redirect to backend Facebook login endpoint
+        window.location.href = 'http://localhost:8080/auth/facebook';
+    };
+
     return (
         <div>
             <h2>Login</h2>
             <button onClick={handleGoogleLogin}>Login with Google</button>
+            <button onClick={handleFacebookLogin}>Login with Facebook</button>
         </div>
     );
 };
