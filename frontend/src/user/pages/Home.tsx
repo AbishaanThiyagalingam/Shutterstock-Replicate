@@ -8,7 +8,7 @@ const Home: React.FC = () => {
     <>
       <section
         id="home"
-        className="dark:bg-[#000000] relative z-10 overflow-hidden bg-cover bg-center bg-no-repeat pb-16 pt-[120px] md:pb-[120px] md:pt-[150px] xl:pb-[160px] xl:pt-[180px] 2xl:pb-[200px] 2xl:pt-[210px]"
+        className="dark:bg-[#000000] relative z-10 overflow-hidden bg-cover bg-center bg-no-repeat pb-48 pt-[240px] md:pb-[140px] md:pt-[180px] xl:pb-[200px] xl:pt-[220px] 2xl:pb-[240px] 2xl:pt-[260px]"
         style={{
           backgroundImage: `url(${bgImage})`,
         }}

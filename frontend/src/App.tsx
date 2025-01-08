@@ -10,21 +10,23 @@
 
 // App.tsx
 import React from "react";
-import { BrowserRouter as Router } from "react-router-dom";
-import Header from "./user/components/Header/index";
-import Footer from "./user/components/Footer/index";
-import Home from "./user/pages/Home";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import UserApp from "./user/app"; // User-specific App
+import AdminApp from "./admin/app"; // Admin-specific App
 
 const App: React.FC = () => {
   return (
     <Router>
-      <div>
-        <Header />
-        <Home />
-        <Footer />
-      </div>
+      <Routes>
+        {/* Admin Layout */}
+        <Route path="/admin/*" element={<AdminApp />} />
+
+        {/* User Layout */}
+        <Route path="/*" element={<UserApp />} />
+      </Routes>
     </Router>
   );
 };
 
 export default App;
+

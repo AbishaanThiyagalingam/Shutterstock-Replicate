@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import menuData from "./menuData";
+import Modal from "../Modal/Modal";
+import LoginForm from "../Forms/LoginForm";
+import SignUpForm from "../Forms/SignUpForm";
 
 const Header = () => {
   // Navbar toggle
@@ -18,6 +21,9 @@ const Header = () => {
       setSticky(false);
     }
   };
+
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [isSignUpOpen, setIsSignUpOpen] = useState(false);
 
   useEffect(() => {
     window.addEventListener("scroll", handleStickyNavbar);
@@ -69,7 +75,9 @@ const Header = () => {
                   style={{ width: "140px", height: "30px" }}
                   className="hidden w-full dark:block"
                 /> */}
-                <h1 className="text-2xl font-bold text-white dark:text-white">ButterStock</h1>
+                <h1 className="text-2xl font-bold text-white dark:text-white">
+                  ButterStock
+                </h1>
               </Link>
             </div>
             <div className="flex w-full items-center justify-end px-4">
@@ -84,7 +92,7 @@ const Header = () => {
                     className={`relative my-1.5 block h-0.5 w-[30px] bg-[#FFFFFF] transition-all duration-300 dark:bg-white ${
                       navbarOpen ? " top-[7px] rotate-45" : " "
                     }`}
-                  />  
+                  />
                   <span
                     className={`relative my-1.5 block h-0.5 w-[30px] bg-[#FFFFFF] transition-all duration-300 dark:bg-white ${
                       navbarOpen ? "opacity-0 " : " "
@@ -98,7 +106,7 @@ const Header = () => {
                 </button>
                 <nav
                   id="navbarCollapse"
-                  className={`navbar absolute right-0 z-30 w-[250px] rounded border-[.5px] border-body-color/50 bg-black/70 px-6 py-4 duration-300 dark:border-body-color/20 dark:bg-[#000000] lg:visible lg:static lg:w-auto lg:border-none lg:!bg-transparent lg:p-0 lg:opacity-100 ${
+                  className={`navbar absolute right-0 z-30 w-[250px] rounded border-[.5px] border-body-color/50 bg-black/80 px-6 py-4 duration-300 dark:border-body-color/20 dark:bg-[#000000] lg:visible lg:static lg:w-auto lg:border-none lg:!bg-transparent lg:p-0 lg:opacity-100 ${
                     navbarOpen
                       ? "visibility top-full opacity-100"
                       : "invisible top-[120%] opacity-0"
@@ -127,7 +135,11 @@ const Header = () => {
                               >
                                 {menuItem.title}
                                 <span className="pl-3">
-                                  <svg width="25" height="24" viewBox="0 0 25 24">
+                                  <svg
+                                    width="25"
+                                    height="24"
+                                    viewBox="0 0 25 24"
+                                  >
                                     <path
                                       fillRule="evenodd"
                                       clipRule="evenodd"
@@ -138,13 +150,13 @@ const Header = () => {
                                 </span>
                               </p>
                               <div
-                                className={`submenu relative left-0 top-full rounded-sm bg-black/70 transition-[top] duration-300 group-hover:opacity-100 dark:bg-[#000000] lg:invisible lg:absolute lg:top-[110%] lg:block lg:w-[250px] lg:p-4 lg:opacity-0 lg:shadow-lg lg:group-hover:visible lg:group-hover:top-full ${
+                                className={`submenu relative left-0 top-full rounded-sm bg-black/80 transition-[top] duration-300 group-hover:opacity-100 dark:bg-[#000000] lg:invisible lg:absolute lg:top-[110%] lg:block lg:w-[250px] lg:p-4 lg:opacity-0 lg:shadow-lg lg:group-hover:visible lg:group-hover:top-full ${
                                   openIndex === index ? "block" : "hidden"
                                 }`}
                               >
                                 {menuItem.submenu?.map((submenuItem, index) => (
                                   <Link
-                                    to={submenuItem.path || "#"} 
+                                    to={submenuItem.path || "#"}
                                     key={index}
                                     className="block rounded py-2.5 text-sm text-white/70 hover:text-white dark:text-white/70 dark:hover:text-white lg:px-3"
                                   >
@@ -159,39 +171,49 @@ const Header = () => {
                     </ul>
                     {/* Mobile-Only Buttons */}
                     <div className="mt-6 flex flex-col space-y-4 md:hidden">
-                      <Link
-                        to="/signin"
+                      <button
+                        onClick={() => setIsLoginOpen(true)} // Open Login Modal
                         className="px-4 py-2 text-center text-base font-medium text-black bg-white rounded-[20px] shadow-md hover:bg-opacity-90 transition"
                       >
                         Login
-                      </Link>
-                      <Link
-                        to="/signup"
+                      </button>
+                      <button
+                        onClick={() => setIsSignUpOpen(true)} // Open Signup Modal
                         className="px-4 py-2 text-center text-base font-medium text-black bg-white rounded-[20px] shadow-md hover:bg-opacity-90 transition"
                       >
                         Signup
-                      </Link>
+                      </button>
                     </div>
                   </div>
                 </nav>
               </div>
               <div className="flex items-center justify-end pr-16 lg:pr-0 space-x-6">
-                <Link
-                  to="/signin"
+                <button
+                  onClick={() => setIsLoginOpen(true)} // Open the Login Modal
                   className="hidden ml-6 px-6 py-3 text-base font-medium text-black bg-white hover:bg-opacity-90 rounded-[20px] shadow-md transition duration-300 md:block"
                 >
                   Login
-                </Link>
-                <Link
-                  to="/signup"
+                </button>
+                <button
+                  onClick={() => setIsSignUpOpen(true)} // Open the Signup Modal
                   className="hidden px-6 py-3 text-base font-medium text-black bg-white hover:bg-opacity-90 rounded-[20px] shadow-md transition duration-300 md:block"
                 >
                   Signup
-                </Link>
+                </button>
               </div>
             </div>
           </div>
         </div>
+
+        {/* Login Modal */}
+        <Modal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)}>
+          <LoginForm />
+        </Modal>
+
+        {/* Sign-Up Modal */}
+        <Modal isOpen={isSignUpOpen} onClose={() => setIsSignUpOpen(false)}>
+          <SignUpForm />
+        </Modal>
       </header>
     </>
   );
