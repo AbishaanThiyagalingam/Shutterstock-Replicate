@@ -4,6 +4,7 @@ import menuData from "./menuData";
 import Modal from "../Modal/Modal";
 import LoginForm from "../Forms/LoginForm";
 import SignUpForm from "../Forms/SignUpForm";
+import UploadImageForm from "../Forms/UploadImageForm";
 
 const Header = () => {
   // Navbar toggle
@@ -24,6 +25,7 @@ const Header = () => {
 
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isSignUpOpen, setIsSignUpOpen] = useState(false);
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
 
   useEffect(() => {
     window.addEventListener("scroll", handleStickyNavbar);
@@ -86,7 +88,7 @@ const Header = () => {
                   onClick={navbarToggleHandler}
                   id="navbarToggler"
                   aria-label="Mobile Menu"
-                  className="absolute right-4 top-1/2 block translate-y-[-50%] rounded-lg px-3 py-[6px] ring-primary focus:ring-2 lg:hidden"
+                  className="absolute right-4 top-1/2 block translate-y-[-50%] rounded-lg px-3 py-[6px] ring-[#FFFFFF] focus:ring-2 lg:hidden"
                 >
                   <span
                     className={`relative my-1.5 block h-0.5 w-[30px] bg-[#FFFFFF] transition-all duration-300 dark:bg-white ${
@@ -116,7 +118,26 @@ const Header = () => {
                     <ul className="block lg:flex lg:space-x-12">
                       {menuData.map((menuItem, index) => (
                         <li key={index} className="group relative">
-                          {menuItem.path ? (
+                          {/* {menuItem.path ? (
+                            <Link
+                              to={menuItem.path}
+                              className={`flex py-2 text-base lg:mr-0 lg:inline-flex lg:px-0 lg:py-6 ${
+                                usePathName === menuItem.path
+                                  ? "text-white dark:text-white"
+                                  : "text-white/70 hover:text-white dark:text-white/70 dark:hover:text-white"
+                              }`}
+                            >
+                              {menuItem.title}
+                            </Link>
+                          )  */}
+                          {menuItem.title === "Images" ? (
+                            <button
+                              onClick={() => setIsImageModalOpen(true)}
+                              className="flex py-2 text-base lg:mr-0 lg:inline-flex lg:px-0 lg:py-6 text-white/70 hover:text-white dark:text-white/70 dark:hover:text-white"
+                            >
+                              {menuItem.title}
+                            </button>
+                          ) : menuItem.path ? (
                             <Link
                               to={menuItem.path}
                               className={`flex py-2 text-base lg:mr-0 lg:inline-flex lg:px-0 lg:py-6 ${
@@ -213,6 +234,14 @@ const Header = () => {
         {/* Sign-Up Modal */}
         <Modal isOpen={isSignUpOpen} onClose={() => setIsSignUpOpen(false)}>
           <SignUpForm />
+        </Modal>
+
+        {/* Images Modal */}
+        <Modal
+          isOpen={isImageModalOpen}
+          onClose={() => setIsImageModalOpen(false)}
+        >
+          <UploadImageForm />
         </Modal>
       </header>
     </>
