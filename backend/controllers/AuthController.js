@@ -56,7 +56,7 @@ exports.facebookCallback = (req, res, next) => {
             // Record history
             await UserHistory.create({
                 userId: user._id,
-                action: UserActivities.LOGIN, // Use the existing `LOGIN` activity
+                action: UserActivities.FACEBOOK_LOGIN,
                 metadata: { facebookId: user.facebookId },
             });
 

@@ -1,4 +1,3 @@
-// controllers/AdminController.js
 const Admin = require('../models/Admin');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');

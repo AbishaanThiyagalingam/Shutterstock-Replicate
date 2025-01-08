@@ -1,4 +1,3 @@
-// controllers/imageController.js
 const path = require("path");
 const fs = require("fs");
 const Image = require("../models/Image");
