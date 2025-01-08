@@ -5,6 +5,9 @@ const bcrypt = require('bcrypt');
 const UserHistory = require('../models/UserHistory');
 const UserActivities = require('../utils/UserActivities');
 const UserRoles = require('../utils/UserRoles');
+const crypto = require('crypto');
+const nodemailer = require('nodemailer');
+const PendingUser = require('../models/PendingUser');
 
 // Handle Google login route
 exports.googleLogin = passport.authenticate('google', { scope: ['profile', 'email'] });
@@ -82,41 +85,76 @@ exports.becomeSeller = async (req, res) => {
     }
 };
 
-// Register user
 exports.register = async (req, res) => {
     const { email, password, name } = req.body;
 
     try {
-        // Check if email already exists
+        // Check if email is already in use (both PendingUser and User collections)
         const existingUser = await User.findOne({ email });
+        const pendingUser = await PendingUser.findOne({ email });
+
         if (existingUser) {
             if (existingUser.googleId) {
-                // If the email is linked to a Google account
                 return res.status(400).json({ 
                     message: 'An account with this email is already linked to Google login. Please use Google to log in.' 
                 });
             } else {
-                // If the email is linked to a regular account
                 return res.status(400).json({ 
                     message: 'An account with this email already exists. Please log in instead.' 
                 });
             }
         }
 
-        // Create a new user
-        const user = new User({ email, password, name });
-        await user.save();
+        if (pendingUser) {
+            return res.status(400).json({ message: 'An account is pending verification for this email. Please check your email to verify.' });
+        }
 
-         // Record history
-         await UserHistory.create({
-            userId: user._id,
-            action: UserActivities.REGISTER,
-            metadata: { email },
+        // Generate a verification token
+        const verificationToken = crypto.randomBytes(32).toString('hex');
+
+        // Save the user in the PendingUser collection
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const newPendingUser = await PendingUser.create({
+            email,
+            password: hashedPassword,
+            name,
+            verificationToken,
         });
 
-        res.status(201).json({ message: 'User registered successfully!' });
+        // Record history for registration
+        await UserHistory.create({
+            userId: newPendingUser._id,
+            action: UserActivities.VERIFY_EMAIL_PENDING,
+            metadata: { email, name },
+        });
+
+        // Send verification email
+        const transporter = nodemailer.createTransport({
+            service: 'Gmail',
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASSWORD,
+            },
+        });
+
+        const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: email,
+            subject: 'Verify Your Email',
+            html: `
+                <h1>Email Verification</h1>
+                <p>Click the link below to verify your email:</p>
+                <a href="${process.env.BASE_URL}/auth/verify-email?token=${verificationToken}">
+                    Verify Email
+                </a>
+            `,
+        };
+
+        await transporter.sendMail(mailOptions);
+
+        res.status(201).json({ message: 'Registration successful. Please check your email to verify your account.' });
     } catch (error) {
-        console.error('Error registering user:', error);
+        console.error('Error during registration:', error);
         res.status(500).json({ message: 'An error occurred while registering.' });
     }
 };
