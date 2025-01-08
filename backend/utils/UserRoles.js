@@ -1,4 +1,4 @@
 module.exports = {
-    BUYER: 'buyer',
-    SELLER: 'seller'
+    BUYER: 'BUYER',
+    SELLER: 'SELLER'
 }

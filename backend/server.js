@@ -13,6 +13,7 @@ const authRoutes = require('./routes/AuthRoutes');
 const imageRoutes = require('./routes/ImageRoutes');
 const categoryRoutes = require('./routes/CategoryRoutes');
 const userHistoryRoutes = require('./routes/UserHistoryRoutes');
+const adminRoutes = require('./routes/AdminRoutes');
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -94,11 +95,12 @@ app.use('/auth', authRoutes);
 app.use('/images', imageRoutes);
 app.use('/categories', categoryRoutes);
 app.use('/history', userHistoryRoutes);
+app.use ('/admin', adminRoutes);
 
 // Catch 404 errors
-app.use((req, res, _next) => {
-  res.status(404).send(req.t('notFound'));
-});
+// app.use((req, res, _next) => {
+//   res.status(404).send(req.t('notFound'));
+// });
 
 // Start the server
 app.listen(port, () => {
