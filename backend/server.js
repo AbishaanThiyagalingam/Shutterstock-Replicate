@@ -12,6 +12,8 @@ require('./config/passportConfig');
 const authRoutes = require('./routes/AuthRoutes');
 const imageRoutes = require('./routes/ImageRoutes');
 const categoryRoutes = require('./routes/CategoryRoutes');
+const userHistoryRoutes = require('./routes/UserHistoryRoutes');
+
 const app = express();
 const port = process.env.PORT || 8080;
 
@@ -91,6 +93,8 @@ app.use((req, res, next) => {
 app.use('/auth', authRoutes);
 app.use('/images', imageRoutes);
 app.use('/categories', categoryRoutes);
+app.use('/history', userHistoryRoutes);
+
 // Catch 404 errors
 app.use((req, res, _next) => {
   res.status(404).send(req.t('notFound'));

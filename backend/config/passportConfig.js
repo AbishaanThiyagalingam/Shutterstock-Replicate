@@ -1,6 +1,7 @@
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const User = require('../models/User');
+const UserRoles = require('../utils/UserRoles');
 
 passport.use(
     new GoogleStrategy(
@@ -17,7 +18,7 @@ passport.use(
                 // Find or create user in database
                 let user = await User.findOne({ googleId: id });
                 if (!user) {
-                    user = await User.create({ googleId: id, name: displayName, email, role: 'buyer' });
+                    user = await User.create({ googleId: id, name: displayName, email, role: UserRoles.BUYER });
                 }
 
                 done(null, user); // Attach user to req.user

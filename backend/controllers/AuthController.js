@@ -2,6 +2,9 @@ const passport = require('passport');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
+const UserHistory = require('../models/UserHistory');
+const UserActivities = require('../utils/UserActivities');
+const UserRoles = require('../utils/UserRoles');
 
 // Handle Google login route
 exports.googleLogin = passport.authenticate('google', { scope: ['profile', 'email'] });
@@ -16,6 +19,13 @@ exports.googleCallback = (req, res, next) => {
         try {
             // Generate JWT
             const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+            // Record history
+            await UserHistory.create({
+                userId: user._id,
+                action: `${UserActivities.GOOGLE_LOGIN}}`,
+                metadata: { googleId: user.googleId },
+            });
 
             // Redirect with token
             res.redirect(`http://localhost:3000?token=${token}`);
@@ -50,13 +60,20 @@ exports.becomeSeller = async (req, res) => {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        if (user.role === 'seller') {
+        if (user.role === UserRoles.SELLER) {
             return res.status(400).json({ message: 'You are already a seller.' });
         }
 
         user.sellerDetails = { bankName, accountNumber, ifscCode };
-        user.role = 'seller';
+        user.role = UserRoles.SELLER;
         await user.save();
+
+        // Record history
+        await UserHistory.create({
+            userId: user._id,
+            action: UserActivities.BECOME_SELLER,
+            metadata: { bankName, accountNumber },
+        });
 
         res.status(200).json({ message: 'Your details have been submitted. You are now a seller!' });
     } catch (error) {
@@ -90,6 +107,13 @@ exports.register = async (req, res) => {
         const user = new User({ email, password, name });
         await user.save();
 
+         // Record history
+         await UserHistory.create({
+            userId: user._id,
+            action: UserActivities.REGISTER,
+            metadata: { email },
+        });
+
         res.status(201).json({ message: 'User registered successfully!' });
     } catch (error) {
         console.error('Error registering user:', error);
@@ -114,6 +138,13 @@ exports.login = async (req, res) => {
 
         // Generate JWT
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+        // Record history
+        await UserHistory.create({
+            userId: user._id,
+            action: UserActivities.LOGIN,
+        });
+
         res.status(200).json({ token, user: { id: user._id, email: user.email, role: user.role } });
     } catch (error) {
         console.error('Error logging in:', error);

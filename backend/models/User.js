@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const UserRoles = require('../utils/UserRoles');
 
 const userSchema = new mongoose.Schema(
     {
@@ -21,7 +22,7 @@ const userSchema = new mongoose.Schema(
         },
         role: { 
             type: String, 
-            default: 'buyer' 
+            default: UserRoles.BUYER,
         },
         sellerDetails: {
             bankName: { type: String },

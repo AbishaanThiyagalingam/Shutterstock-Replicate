@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const UserRoles = require('../utils/UserRoles');
 
 // Common authentication middleware
 const authenticate = async (req, res, next) => {
@@ -27,7 +28,7 @@ const authenticate = async (req, res, next) => {
 // Middleware to authenticate buyers
 const authenticateBuyer = async (req, res, next) => {
     await authenticate(req, res, async () => {
-        if (req.user.role !== 'buyer') {
+        if (req.user.role !== UserRoles.BUYER) {
             return res.status(403).json({ message: 'Forbidden: Not authorized as a buyer' });
         }
         next();
@@ -37,7 +38,7 @@ const authenticateBuyer = async (req, res, next) => {
 // Middleware to authenticate sellers
 const authenticateSeller = async (req, res, next) => {
     await authenticate(req, res, async () => {
-        if (req.user.role !== 'seller') {
+        if (req.user.role !== UserRoles.SELLER) {
             return res.status(403).json({ message: 'Forbidden: Not authorized as a seller' });
         }
         next();
