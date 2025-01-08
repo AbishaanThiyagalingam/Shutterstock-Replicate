@@ -12,4 +12,8 @@ router.post('/register', authController.register);
 router.post('/login', authController.login);
 router.get('/verify-email', pendingUserController.verifyEmail);
 
+// Facebook Login
+router.get('/facebook', authController.facebookLogin);
+router.get('/facebook/callback', authController.facebookCallback);
+
 module.exports = router;

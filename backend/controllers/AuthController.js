@@ -26,8 +26,38 @@ exports.googleCallback = (req, res, next) => {
             // Record history
             await UserHistory.create({
                 userId: user._id,
-                action: `${UserActivities.GOOGLE_LOGIN}}`,
+                action: UserActivities.GOOGLE_LOGIN,
                 metadata: { googleId: user.googleId },
+            });
+
+            // Redirect with token
+            res.redirect(`http://localhost:3000?token=${token}`);
+        } catch (error) {
+            console.error('Error generating token:', error);
+            res.status(500).json({ message: 'An error occurred while logging in.' });
+        }
+    })(req, res, next);
+};
+
+// Handle Facebook login route
+exports.facebookLogin = passport.authenticate('facebook', { scope: ['email'] });
+
+exports.facebookCallback = (req, res, next) => {
+    passport.authenticate('facebook', async (err, user) => {
+        if (err || !user) {
+            console.error('Authentication error:', err);
+            return res.status(401).json({ message: 'Authentication failed' });
+        }
+
+        try {
+            // Generate JWT
+            const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+            // Record history
+            await UserHistory.create({
+                userId: user._id,
+                action: UserActivities.LOGIN, // Use the existing `LOGIN` activity
+                metadata: { facebookId: user.facebookId },
             });
 
             // Redirect with token
@@ -84,6 +114,7 @@ exports.becomeSeller = async (req, res) => {
         res.status(500).json({ message: 'An error occurred while processing your request.' });
     }
 };
+
 
 exports.register = async (req, res) => {
     const { email, password, name } = req.body;
