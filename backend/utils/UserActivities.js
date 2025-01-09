@@ -1,10 +1,10 @@
 module.exports = {
-    REGISTER: 'User registered',
-    VERIFY_EMAIL_PENDING: 'VERIFY_EMAIL_PENDING',
-    LOGIN: 'User logged in',
-    GOOGLE_LOGIN: 'User logged in with Google',
-    FACEBOOK_LOGIN: 'User logged in with Facebook',
-    BECOME_SELLER: 'User became a seller',
-    UPDATE_PROFILE: 'User updated profile',
-    LOGOUT: 'User logged out',
+    REGISTER: 'USER REGISTERED',
+    VERIFY_EMAIL_PENDING: 'VERIFY EMAIL PENDING',
+    LOGIN: 'USER LOGGED IN',
+    GOOGLE_LOGIN: 'USER LOGGED IN WITH GOOGLE',
+    FACEBOOK_LOGIN: 'USER LOGGED IN WITH FACEBOOK',
+    BECOME_SELLER: 'USER BECAME A SELLER',
+    UPDATE_PROFILE: 'USER UPDATED PROFILE',
+    LOGOUT: 'USER LOGGED OUT',
 };

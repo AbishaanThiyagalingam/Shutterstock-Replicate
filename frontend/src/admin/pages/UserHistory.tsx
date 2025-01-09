@@ -20,16 +20,16 @@ const UserHistory: React.FC = () => {
   const itemsPerPage = 5;
 
   const activityFilters = [
-    "All",
-    "User registered",
-    "VERIFY_EMAIL_PENDING",
-    "User logged in",
-    "User logged in with Google",
-    "User logged in with Facebook",
-    "User became a seller",
-    "User updated profile",
-    "User logged out",
-  ];
+    "ALL",
+    "USER REGISTERED",
+    "VERIFY EMAIL PENDING",
+    "USER LOGGED IN",
+    "USER LOGGED IN WITH GOOGLE",
+    "USER LOGGED IN WITH FACEBOOK",
+    "USER BECAME A SELLER",
+    "USER UPDATED PROFILE",
+    "USER LOGGED OUT",
+  ];  
 
   useEffect(() => {
     fetchUserHistory();
