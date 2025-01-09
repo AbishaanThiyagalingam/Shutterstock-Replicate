@@ -73,5 +73,18 @@ exports.deleteCategory = async (req, res) => {
   }
 };
 
+// get image 
+exports.getImage = (req, res) => {
+  const filename = req.params.filename; // Get the filename from the URL
+  const filePath = path.join(__dirname, "../uploads", filename); // Construct the file path
+
+  res.sendFile(filePath, (err) => {
+      if (err) {
+          console.error("Error sending file:", err);
+          res.status(404).json({ error: "Image not found." });
+      }
+  });
+};
+
 // Export multer configuration
 exports.upload = upload;
