@@ -4,9 +4,9 @@ const authMiddleware = require('../middleware/Auth');
 
 const router = express.Router();
 
-router.get('/', authMiddleware.authenticate, UserHistoryController.getUserHistory);
-router.post('/', authMiddleware.authenticate, UserHistoryController.addUserHistory);
-router.delete('/:historyId', authMiddleware.authenticate, UserHistoryController.deleteUserHistory);
-router.delete('/clear/:userId', authMiddleware.authenticate, UserHistoryController.clearUserHistory);
+router.get('/',  UserHistoryController.getUserHistory);
+router.post('/',  UserHistoryController.addUserHistory);
+router.delete('/:historyId',UserHistoryController.deleteUserHistory);
+router.delete('/clear/:userId', UserHistoryController.clearUserHistory);
 
 module.exports = router;

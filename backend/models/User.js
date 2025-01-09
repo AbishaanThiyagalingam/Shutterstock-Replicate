@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema(
         },
         facebookId: { 
             type: String, 
-            unique: true 
+            // unique: true 
         },
         name: { 
             type: String, 
