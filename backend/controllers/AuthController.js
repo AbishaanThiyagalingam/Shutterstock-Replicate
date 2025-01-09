@@ -83,6 +83,26 @@ exports.getUserProfile = async (req, res) => {
     }
 };
 
+// Check seller status
+exports.isSeller = async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id).select('-password'); // Exclude sensitive fields
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        // Check if the user is a seller
+        const isSeller = user.role === UserRoles.SELLER;
+
+        res.status(200).json({ 
+            user, 
+            isSeller 
+        })
+    } catch (error) {
+        console.error('Error fetching profile:', error);
+        res.status(500).json({ message: 'An error occurred while fetching the profile.' });
+    }
+};
+
 // Submit seller details and switch role
 exports.becomeSeller = async (req, res) => {
     const { bankName, accountNumber, ifscCode } = req.body;
