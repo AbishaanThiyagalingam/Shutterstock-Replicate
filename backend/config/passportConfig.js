@@ -2,6 +2,7 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const FacebookStrategy = require('passport-facebook').Strategy;
 const User = require('../models/User');
+const UserRoles = require('../utils/UserRoles');
 
 // Google Strategy
 passport.use(
@@ -31,7 +32,7 @@ passport.use(
                         googleId: id,
                         name: displayName,
                         email,
-                        role: 'buyer',
+                        role: UserRoles.BUYER,
                     });
                 }
 
@@ -76,7 +77,7 @@ passport.use(
                         facebookId: id,
                         name: displayName,
                         email,
-                        role: 'buyer',
+                        role: UserRoles.BUYER,
                     });
                 }
 

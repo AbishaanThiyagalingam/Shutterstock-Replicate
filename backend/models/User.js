@@ -9,7 +9,8 @@ const userSchema = new mongoose.Schema(
             unique: true 
         },
         facebookId: { 
-            type: String, 
+            type: String,
+            default: null, 
             // unique: true 
         },
         name: { 
