@@ -8,6 +8,6 @@ router.post("/", adminAuthMiddleware([Roles.ALL_ACCESS]) , categoryController.up
 router.get("/", adminAuthMiddleware([Roles.ALL_ACCESS]) , categoryController.getAllCategories);
 router.put("/:id", adminAuthMiddleware([Roles.ALL_ACCESS]) , categoryController.upload.single("thumbnail"), categoryController.updateCategory);
 router.delete("/:id", adminAuthMiddleware([Roles.ALL_ACCESS]) , categoryController.deleteCategory);
-router.get("/:filename", adminAuthMiddleware([Roles.ALL_ACCESS]) , imageController.getImage);
+router.get("/:filename", adminAuthMiddleware([Roles.ALL_ACCESS]) , categoryController.getImage);
 
 module.exports = router;
