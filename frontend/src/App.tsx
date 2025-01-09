@@ -11,8 +11,9 @@
 // App.tsx
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import UserApp from "./user/app"; // User-specific App
+import UserApp from "./user/App"; // User-specific App
 import AdminApp from "./admin/app"; // Admin-specific App
+import SellerApp from "./seller/App"; // Seller-specific App
 
 const App: React.FC = () => {
   return (
@@ -20,6 +21,9 @@ const App: React.FC = () => {
       <Routes>
         {/* Admin Layout */}
         <Route path="/admin/*" element={<AdminApp />} />
+
+        {/* Seller Layout */}
+        <Route path="/seller/*" element={<SellerApp />} />
 
         {/* User Layout */}
         <Route path="/*" element={<UserApp />} />
@@ -29,4 +33,3 @@ const App: React.FC = () => {
 };
 
 export default App;
-

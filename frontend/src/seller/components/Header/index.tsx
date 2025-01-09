@@ -6,29 +6,28 @@ import LoginForm from "../Forms/LoginForm";
 import SignUpForm from "../Forms/SignUpForm";
 import UploadImageForm from "../Forms/UploadImageForm";
 import ConfirmationForm from "../Forms/ConfirmationForm";
-import cart from "../../../images/cart.svg";
-import user from "../../../images/user.svg";
+import user from "../../../images/seller.svg";
 
 const Header = () => {
-  // Navbar toggle
   const [navbarOpen, setNavbarOpen] = useState(false);
   const navbarToggleHandler = () => setNavbarOpen(!navbarOpen);
 
-  // User dropdown
-  const [userDropdownOpen, setUserDropdownOpen] = useState(false);
-
-  // Sticky Navbar
   const [sticky, setSticky] = useState(false);
-  const handleStickyNavbar = () => setSticky(window.scrollY >= 80);
+  const handleStickyNavbar = () => {
+    setSticky(window.scrollY >= 80);
+  };
 
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isSignUpOpen, setIsSignUpOpen] = useState(false);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
 
-  const [isSellerMode, setIsSellerMode] = useState(false);
+  const [isSellerMode, setIsSellerMode] = useState(true);
 
   const navigate = useNavigate();
+
+  // User dropdown
+  const [userDropdownOpen, setUserDropdownOpen] = useState(false);
 
   useEffect(() => {
     window.addEventListener("scroll", handleStickyNavbar);
@@ -45,74 +44,109 @@ const Header = () => {
   const location = useLocation();
   const usePathName = location.pathname;
 
-  const handleModeChange = () => setIsConfirmationOpen(true);
+  const handleModeChange = () => {
+    setIsConfirmationOpen(true);
+  };
 
   const confirmModeChange = () => {
     setIsConfirmationOpen(false);
-    if (!isSellerMode) navigate("/seller");
+    if (isSellerMode) {
+      navigate("/"); // Navigate to base URL
+    }
     setIsSellerMode(!isSellerMode);
   };
 
-  const cancelModeChange = () => setIsConfirmationOpen(false);
+  const cancelModeChange = () => {
+    setIsConfirmationOpen(false);
+  };
 
   return (
     <>
       <header
-        className={`header left-0 top-0 z-40 flex w-full items-center ${
+        className={`left-0 top-0 z-40 flex w-full items-center ${
           sticky
-            ? "dark:bg-[#000000] dark:shadow-sticky-dark fixed z-[9999] bg-black !bg-opacity-80 shadow-sticky backdrop-blur-sm transition"
+            ? "dark:bg-[#FFFFFF] dark:shadow-sticky-dark fixed z-[9999] bg-white !bg-opacity-80 shadow-sticky backdrop-blur-sm transition"
             : "absolute bg-transparent"
         }`}
       >
         <div className="container">
-          <div className="relative flex items-center justify-between">
+          <div className="relative -mx-4 flex items-center justify-between">
             {/* Logo Section */}
-            <div className="w-60 max-w-full xl:mr-12">
+            <div className="w-60 max-w-full px-4 xl:mr-12">
               <Link
                 to="/"
-                className={`header-logo block ${
+                className={`header-logo block w-full ${
                   sticky ? "py-5 lg:py-2" : "py-8"
                 }`}
               >
-                <h1 className="text-2xl font-bold text-white dark:text-white">
-                  ButterStockk
+                <h1 className="text-2xl font-bold text-black dark:text-black">
+                  ButterStock
                 </h1>
               </Link>
             </div>
 
-            {/* Navigation and Icons */}
-            <div className="flex items-center justify-end w-full">
-              {/* Navigation Toggle for Mobile */}
-
+            {/* Navigation Section */}
+            <div className="flex w-full items-center justify-end px-4">
+              {/* Mobile Burger Menu */}
               <div className="flex items-center lg:hidden">
                 <button
                   onClick={navbarToggleHandler}
                   id="navbarToggler"
                   aria-label="Mobile Menu"
-                  className="relative z-10 block rounded-lg px-3 py-[6px] ring-[#FFFFFF] focus:ring-2"
+                  className="relative z-10 block rounded-lg px-3 py-[6px] ring-[#000000] focus:ring-2"
                 >
                   <span
-                    className={`relative my-1.5 block h-0.5 w-[30px] bg-[#FFFFFF] transition-all duration-300 dark:bg-white ${
+                    className={`relative my-1.5 block h-0.5 w-[30px] bg-[#000000] transition-all duration-300 dark:bg-black ${
                       navbarOpen ? " top-[7px] rotate-45" : ""
                     }`}
                   />
                   <span
-                    className={`relative my-1.5 block h-0.5 w-[30px] bg-[#FFFFFF] transition-all duration-300 dark:bg-white ${
+                    className={`relative my-1.5 block h-0.5 w-[30px] bg-[#000000] transition-all duration-300 dark:bg-black ${
                       navbarOpen ? "opacity-0" : ""
                     }`}
                   />
                   <span
-                    className={`relative my-1.5 block h-0.5 w-[30px] bg-[#FFFFFF] transition-all duration-300 dark:bg-white ${
+                    className={`relative my-1.5 block h-0.5 w-[30px] bg-[#000000] transition-all duration-300 dark:bg-black ${
                       navbarOpen ? " top-[-8px] -rotate-45" : ""
                     }`}
                   />
                 </button>
+                {/* User Icon for Mobile */}
+                <div className="relative ml-4">
+                  <img
+                    src={user}
+                    alt="User"
+                    className="w-6 h-6 cursor-pointer"
+                    onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+                  />
+                  <div
+                    className={`absolute right-0 mt-2 w-[200px] rounded bg-white/80 p-4 shadow-lg transition-opacity duration-300 dark:bg-[#FFFFFF] ${
+                      userDropdownOpen ? "block" : "hidden"
+                    }`}
+                  >
+                    <Link
+                      to="/account"
+                      className="block py-2 text-sm text-black/70 hover:text-black"
+                    >
+                      Account
+                    </Link>
+                    <button
+                      className="block w-full py-2 text-left text-sm text-black/70 hover:text-black"
+                      onClick={() => setIsSignUpOpen(true)}
+                      // onClick={() => {
+                      //   alert("Logged out!");
+                      // }}
+                    >
+                      Logout
+                    </button>
+                  </div>
+                </div>
               </div>
 
-              {/* Navigation Menu */}
+              {/* Navigation Links */}
               <nav
                 id="navbarCollapse"
-                className={`navbar absolute right-0 z-30 w-[250px] rounded border-[.5px] border-body-color/50 bg-black/80 px-6 py-4 duration-300 dark:border-body-color/20 dark:bg-[#000000] lg:visible lg:static lg:w-auto lg:border-none lg:!bg-transparent lg:p-0 lg:opacity-100 ${
+                className={`navbar absolute right-0 z-30 w-[250px] rounded border-[.5px] border-body-color/50 bg-white/80 px-6 py-4 duration-300 dark:border-body-color/20 dark:bg-[#FFFFFF] lg:visible lg:static lg:w-auto lg:border-none lg:!bg-transparent lg:p-0 lg:opacity-100 ${
                   navbarOpen
                     ? "visibility top-full opacity-100"
                     : "invisible top-[120%] opacity-0"
@@ -126,8 +160,8 @@ const Header = () => {
                         <span
                           className={`mr-3 text-base ${
                             isSellerMode
-                              ? "text-white/70 dark:text-white"
-                              : "text-white/70 hover:text-white dark:text-white/70 dark:hover:text-white"
+                              ? "text-black/70 dark:text-black"
+                              : "text-black/70 hover:text-black dark:text-black/70 dark:hover:text-black"
                           }`}
                         >
                           {isSellerMode ? "Seller Mode" : "Buyer Mode"}
@@ -138,15 +172,16 @@ const Header = () => {
                           checked={isSellerMode}
                           onChange={handleModeChange}
                         />
-                        <div className="relative w-11 h-6 bg-gray-300 rounded-full peer peer-focus:ring-2 peer-focus:ring-gray-500 dark:peer-focus:ring-black peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-black after:border-gray-500 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-white"></div>
+                        <div className="relative w-11 h-6 bg-gray-300 rounded-full peer peer-focus:ring-2 peer-focus:ring-gray-500 dark:peer-focus:ring-black peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-500 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-black"></div>
                       </label>
                     </li>
+
                     {menuData.map((menuItem, index) => (
                       <li key={index} className="group relative">
                         {menuItem.title === "Images" ? (
                           <button
                             onClick={() => setIsImageModalOpen(true)}
-                            className="flex py-2 text-base lg:mr-0 lg:inline-flex lg:px-0 lg:py-6 text-white/70 hover:text-white dark:text-white/70 dark:hover:text-white"
+                            className="flex py-2 text-base lg:mr-0 lg:inline-flex lg:px-0 lg:py-6 text-black/70 hover:text-black dark:text-black/70 dark:hover:text-black"
                           >
                             {menuItem.title}
                           </button>
@@ -155,8 +190,8 @@ const Header = () => {
                             to={menuItem.path}
                             className={`flex py-2 text-base lg:mr-0 lg:inline-flex lg:px-0 lg:py-6 ${
                               usePathName === menuItem.path
-                                ? "text-white dark:text-white"
-                                : "text-white/70 hover:text-white dark:text-white/70 dark:hover:text-white"
+                                ? "text-black dark:text-black"
+                                : "text-black/70 hover:text-black dark:text-black/70 dark:hover:text-black"
                             }`}
                           >
                             {menuItem.title}
@@ -165,7 +200,7 @@ const Header = () => {
                           <>
                             <p
                               onClick={() => handleSubmenu(index)}
-                              className="flex cursor-pointer items-center justify-between py-2 text-base text-white/70 group-hover:text-white dark:text-white/70 dark:group-hover:text-white lg:mr-0 lg:inline-flex lg:px-0 lg:py-6"
+                              className="flex cursor-pointer items-center justify-between py-2 text-base text-black/70 group-hover:text-black dark:text-black/70 dark:group-hover:text-black lg:mr-0 lg:inline-flex lg:px-0 lg:py-6"
                             >
                               {menuItem.title}
                               <span className="pl-3">
@@ -180,7 +215,7 @@ const Header = () => {
                               </span>
                             </p>
                             <div
-                              className={`submenu relative left-0 top-full rounded-sm bg-black/80 transition-[top] duration-300 group-hover:opacity-100 dark:bg-[#000000] lg:invisible lg:absolute lg:top-[110%] lg:block lg:w-[250px] lg:p-4 lg:opacity-0 lg:shadow-lg lg:group-hover:visible lg:group-hover:top-full ${
+                              className={`submenu relative left-0 top-full rounded-sm bg-white/80 transition-[top] duration-300 group-hover:opacity-100 dark:bg-[#FFFFFF] lg:invisible lg:absolute lg:top-[110%] lg:block lg:w-[250px] lg:p-4 lg:opacity-0 lg:shadow-lg lg:group-hover:visible lg:group-hover:top-full ${
                                 openIndex === index ? "block" : "hidden"
                               }`}
                             >
@@ -188,7 +223,7 @@ const Header = () => {
                                 <Link
                                   to={submenuItem.path || "#"}
                                   key={index}
-                                  className="block rounded py-2.5 text-sm text-white/70 hover:text-white dark:text-white/70 dark:hover:text-white lg:px-3"
+                                  className="block rounded py-2.5 text-sm text-black/70 hover:text-black dark:text-black/70 dark:hover:text-black lg:px-3"
                                 >
                                   {submenuItem.title}
                                 </Link>
@@ -202,50 +237,49 @@ const Header = () => {
                 </div>
               </nav>
 
-              {/* Icons Section */}
-              <div className="flex items-center ml-4 md:ml-8">
-              {/* Cart Icon */}
-                <Link to="/cart" className="relative">
-                  <img src={cart} alt="Cart" className="w-6 h-6" />
-                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-1">
-                    3
-                  </span>
-                </Link>
-
-                {/* User Icon */}
-                <div className="flex items-center ml-4 md:ml-8">
+              {/* Desktop User Icon */}
+              <div className="hidden lg:block relative ml-8">
                 <img
-                    src={user}
-                    alt="User"
-                    className="w-6 h-6 cursor-pointer"
-                    onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                  />
-                  <div
-                    className={`absolute right-0 mt-2 w-[200px] rounded bg-black/80 p-4 shadow-lg transition-opacity duration-300 dark:bg-[#000000] ${
-                      userDropdownOpen ? "block" : "hidden"
-                    }`}
+                  src={user}
+                  alt="User"
+                  className="w-5 h-5 cursor-pointer"
+                  onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+                />
+                <div
+                  className={`absolute right-0 mt-2 w-[200px] rounded bg-white/80 p-4 shadow-lg transition-opacity duration-300 dark:bg-[#FFFFFF] ${
+                    userDropdownOpen ? "block" : "hidden"
+                  }`}
+                >
+                  <Link
+                    to="/account"
+                    className="block py-2 text-sm text-black/70 hover:text-black"
                   >
-                    <Link
-                      to="/account"
-                      className="block py-2 text-sm text-white/70 hover:text-white"
-                    >
-                      Account
-                    </Link>
-                    <button
-                      className="block w-full py-2 text-left text-sm text-white/70 hover:text-white"
-                      onClick={() => setIsSignUpOpen(true)}
-                      // onClick={() => {
-                      //   alert("Logged out!");
-                      // }}
-                    >
-                      Logout
-                    </button>
-                  </div>
+                    Account
+                  </Link>
+                  <button
+                    className="block w-full py-2 text-left text-sm text-black/70 hover:text-black"
+                    onClick={() => setIsSignUpOpen(true)}
+                    // onClick={() => {
+                    //   alert("Logged out!");
+                    // }}
+                  >
+                    Logout
+                  </button>
                 </div>
               </div>
             </div>
           </div>
         </div>
+
+        {/* Login Modal */}
+        <Modal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)}>
+          <LoginForm />
+        </Modal>
+
+        {/* Sign-Up Modal */}
+        <Modal isOpen={isSignUpOpen} onClose={() => setIsSignUpOpen(false)}>
+          <SignUpForm />
+        </Modal>
 
         {/* Images Modal */}
         <Modal
