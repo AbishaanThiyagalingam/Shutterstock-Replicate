@@ -30,8 +30,10 @@ exports.googleCallback = (req, res, next) => {
                 metadata: { googleId: user.googleId },
             });
 
-            // Redirect with token
-            res.redirect(`http://localhost:3000?token=${token}`);
+            res.status(200).json({
+                message: 'Authentication successful',
+                token: token,
+            });
         } catch (error) {
             console.error('Error generating token:', error);
             res.status(500).json({ message: 'An error occurred while logging in.' });
@@ -60,8 +62,10 @@ exports.facebookCallback = (req, res, next) => {
                 metadata: { facebookId: user.facebookId },
             });
 
-            // Redirect with token
-            res.redirect(`http://localhost:3000?token=${token}`);
+            res.status(200).json({
+                message: 'Authentication successful',
+                token: token,
+            });
         } catch (error) {
             console.error('Error generating token:', error);
             res.status(500).json({ message: 'An error occurred while logging in.' });
