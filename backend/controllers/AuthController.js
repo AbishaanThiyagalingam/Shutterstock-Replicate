@@ -240,3 +240,45 @@ exports.login = async (req, res) => {
         res.status(500).json({ message: 'An error occurred while logging in.' });
     }
 };
+
+
+// Get all admins
+exports.getAllUsers = async (req, res) => {
+    try {
+        const users = await User.find().select('-password'); 
+        res.status(200).json(users);
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        res.status(500).json({ message: 'An error occurred while fetching users.' });
+    }
+};
+
+// Delete a user
+exports.deleteUser = async (req, res) => {
+    try {
+      const user = await User.findByIdAndDelete(req.params.id);
+      if (!user) {
+        return res.status(404).json({ error: "user not found." });
+      }
+      res.status(200).json({ message: "user deleted." });
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  };
+
+// Get user by ID
+exports.getUserById = async (req, res) => {
+    try {
+        const userId = req.params.id; // Extract the user ID from the request parameters
+        const user = await User.findById(userId).select('-password'); // Exclude the password field
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found.' });
+        }
+
+        res.status(200).json(user);
+    } catch (error) {
+        console.error('Error fetching user by ID:', error);
+        res.status(500).json({ message: 'An error occurred while fetching the user.' });
+    }
+};

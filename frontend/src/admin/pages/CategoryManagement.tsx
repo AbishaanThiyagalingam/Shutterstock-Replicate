@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from "react";
-import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import CategoryModal from "../components/Category/CategoryModal";
 import DeleteModal from "../components/Category/DeleteModal";
 import axios from "axios";
 import { FaEdit, FaTrashAlt } from "react-icons/fa";
 import UpdateCategoryModal from "../components/Category/UpdateCategoryModal";
-import { ThumbsDown } from "lucide-react";
 
 const CategoryManagement: React.FC = () => {
   const [categories, setCategories] = useState([]);

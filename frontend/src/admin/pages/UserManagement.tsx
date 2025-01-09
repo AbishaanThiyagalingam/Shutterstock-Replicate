@@ -1,65 +1,43 @@
 import React, { useState, useEffect } from "react";
-import Sidebar from "../components/Sidebar";
-import Header from "../components/Header";
-import CategoryModal from "../components/Category/CategoryModal";
 import DeleteModal from "../components/Category/DeleteModal";
 import axios from "axios";
-import { FaEdit, FaTrashAlt } from "react-icons/fa";
-import UpdateCategoryModal from "../components/Category/UpdateCategoryModal";
+import { FaTrashAlt } from "react-icons/fa";
 
 const UserManagement: React.FC = () => {
-  const [categories, setCategories] = useState([]);
-  const [modalType, setModalType] = useState<"add" | "update" | "delete" | null>(null);
-  const [currentCategory, setCurrentCategory] = useState<any>(null);
+  const [users, setUsers] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [modalType, setModalType] = useState<"delete" | null>(null);
+  const [currentUser, setCurrentUser] = useState<any>(null);
 
   useEffect(() => {
-    fetchCategories();
+    fetchUsers();
   }, []);
 
-  const fetchCategories = async () => {
+  // Fetch users from the backend
+  const fetchUsers = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/categories");
-      setCategories(response.data);
+      const response = await axios.get("http://localhost:8080/auth/users");
+      setUsers(response.data);
     } catch (error) {
-      console.error("Failed to fetch categories:", error);
+      console.error("Error fetching users:", error);
     }
   };
 
-  const handleAddCategory = async (category: any) => {
+  // Handle user deletion
+  const handleDeleteUser = async (userId: string) => {
     try {
-      await axios.post("http://localhost:8080/categories", category);
-      fetchCategories();
+      await axios.delete(`http://localhost:8080/auth/users/${userId}`);
+      fetchUsers(); // Refresh the user list
       setModalType(null);
     } catch (error) {
-      console.error("Failed to add category:", error);
-    }
-  };
-
-  const handleUpdateCategory = async (categoryId: string, updatedData: any) => {
-    try {
-      await axios.put(`http://localhost:8080/categories/${categoryId}`, updatedData);
-      fetchCategories();
-      setModalType(null);
-    } catch (error) {
-      console.error("Failed to update category:", error);
-    }
-  };
-
-  const handleDeleteCategory = async (categoryId: string) => {
-    try {
-      await axios.delete(`http://localhost:8080/categories/${categoryId}`);
-      fetchCategories();
-      setModalType(null);
-    } catch (error) {
-      console.error("Failed to delete category:", error);
+      console.error("Error deleting user:", error);
     }
   };
 
   // Pagination logic
-  const totalPages = Math.ceil(categories.length / rowsPerPage);
-  const currentData = categories.slice(
+  const totalPages = Math.ceil(users.length / rowsPerPage);
+  const currentData = users.slice(
     (currentPage - 1) * rowsPerPage,
     currentPage * rowsPerPage
   );
@@ -83,63 +61,37 @@ const UserManagement: React.FC = () => {
 
   return (
     <div className="flex">
-      {/* <Sidebar /> */}
       <div className="flex-1">
-        <Header />
         <div className="p-4">
           <div className="flex justify-between items-center mb-4">
             <h1 className="text-2xl font-bold">User Management</h1>
-            <button
-              className="px-4 py-2 bg-blue-500 text-white rounded"
-              onClick={() => setModalType("add")}
-            >
-              Add Category
-            </button>
           </div>
           <div className="overflow-auto rounded-lg shadow-md border border-gray-200">
             <table className="w-full text-left border-collapse bg-white">
               <thead className="bg-gray-100 text-gray-600 uppercase text-sm">
                 <tr>
-                  <th className="p-4">Thumbnail</th>
                   <th className="p-4">Name</th>
-                  <th className="p-4">Description</th>
+                  <th className="p-4">Email</th>
+                  <th className="p-4">Role</th>
                   <th className="p-4">Created At</th>
                   <th className="p-4">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {currentData.map((category: any) => (
-                  <tr key={category._id} className="border-t border-gray-200">
-                    {/* Thumbnail */}
+                {currentData.map((user: any) => (
+                  <tr key={user._id} className="border-t border-gray-200">
+                    <td className="p-4">{user.name}</td>
+                    <td className="p-4">{user.email}</td>
+                    <td className="p-4">{user.role}</td>
                     <td className="p-4">
-                      <img
-                        src={`http://localhost:8080/${category.thumbnail}`}
-                        alt={category.name}
-                        className="w-16 h-16 object-cover rounded"
-                      />
+                      {new Date(user.createdAt).toLocaleString()}
                     </td>
-                    {/* Name */}
-                    <td className="p-4">{category.name}</td>
-                    {/* Description */}
-                    <td className="p-4">{category.description}</td>
-                    {/* Created At */}
-                    <td className="p-4">{new Date(category.createdAt).toLocaleString()}</td>
-                    {/* Actions */}
                     <td className="p-4 flex items-center space-x-2">
-                      <button
-                        className="text-yellow-500 hover:text-yellow-600"
-                        onClick={() => {
-                          setModalType("update");
-                          setCurrentCategory(category);
-                        }}
-                      >
-                        <FaEdit size={20} />
-                      </button>
                       <button
                         className="text-red-500 hover:text-red-600"
                         onClick={() => {
                           setModalType("delete");
-                          setCurrentCategory(category);
+                          setCurrentUser(user);
                         }}
                       >
                         <FaTrashAlt size={20} />
@@ -153,7 +105,6 @@ const UserManagement: React.FC = () => {
 
           {/* Pagination Controls */}
           <div className="flex justify-between items-center mt-4">
-            {/* Rows Per Page Dropdown */}
             <div>
               <label htmlFor="rowsPerPage" className="text-gray-700 mr-2">
                 Rows per page:
@@ -169,13 +120,13 @@ const UserManagement: React.FC = () => {
                 <option value={20}>20</option>
               </select>
             </div>
-
-            {/* Page Number and Navigation */}
             <div className="flex items-center space-x-4">
               <button
                 onClick={handlePreviousPage}
                 className={`px-4 py-2 bg-gray-300 text-gray-700 rounded ${
-                  currentPage === 1 ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-400"
+                  currentPage === 1
+                    ? "opacity-50 cursor-not-allowed"
+                    : "hover:bg-gray-400"
                 }`}
                 disabled={currentPage === 1}
               >
@@ -187,7 +138,9 @@ const UserManagement: React.FC = () => {
               <button
                 onClick={handleNextPage}
                 className={`px-4 py-2 bg-gray-300 text-gray-700 rounded ${
-                  currentPage === totalPages ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-400"
+                  currentPage === totalPages
+                    ? "opacity-50 cursor-not-allowed"
+                    : "hover:bg-gray-400"
                 }`}
                 disabled={currentPage === totalPages}
               >
@@ -196,24 +149,11 @@ const UserManagement: React.FC = () => {
             </div>
           </div>
 
-          {modalType === "add" && (
-            <CategoryModal
-              title="Add Category"
-              onSubmit={handleAddCategory}
-              onClose={() => setModalType(null)}
-            />
-          )}
-          {modalType === "update" && (
-            <UpdateCategoryModal
-              category={currentCategory}
-              onSubmit={(data: any) => handleUpdateCategory(currentCategory._id, data)}
-              onClose={() => setModalType(null)}
-            />
-          )}
+          {/* Delete Modal */}
           {modalType === "delete" && (
             <DeleteModal
-              category={currentCategory}
-              onDelete={() => handleDeleteCategory(currentCategory._id)}
+              category={currentUser} // Replace `category` with the `user` object
+              onDelete={() => handleDeleteUser(currentUser._id)}
               onClose={() => setModalType(null)}
             />
           )}

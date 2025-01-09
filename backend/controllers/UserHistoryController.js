@@ -3,8 +3,7 @@ const UserHistory = require('../models/UserHistory');
 // Get user history
 exports.getUserHistory = async (req, res) => {
     try {
-        // Fetch history for the logged-in user, sorted by most recent first
-        const history = await UserHistory.find({ userId: req.user.id }).sort({ timestamp: -1 });
+        const history = await UserHistory.find().sort({ timestamp: -1 });
         if (!history.length) {
             return res.status(404).json({ message: 'No history found for this user.' });
         }
