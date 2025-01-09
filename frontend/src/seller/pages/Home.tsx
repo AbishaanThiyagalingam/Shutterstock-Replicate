@@ -1,9 +1,17 @@
 // Home.tsx
-import React from "react";
+import React, { useState } from "react";
 import Header from "../components/Header";
+import Modal from "../components/Modal/Modal";
+import UploadImageForm from "../components/Forms/UploadImageForm";
 import bgImage from "../../images/seller-home-page-background.jpg";
 
 const Home: React.FC = () => {
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+
+  const handleOpenModal = () => {
+    setIsImageModalOpen(true);
+  };
+
   return (
     <>
       <section
@@ -26,38 +34,43 @@ const Home: React.FC = () => {
                 <h1 className="mb-5 text-4xl font-extrabold leading-tight text-black sm:text-5xl md:text-6xl">
                   UPLOAD YOUR <br /> BEST CLICKS
                 </h1>
-                <div className="relative mt-8">
-                  <input
-                    type="text"
-                    placeholder="Search Your Photos & Videos"
-                    className="w-full rounded-[20px] border border-black bg-transparent py-3 px-6 pr-14 text-base text-black placeholder-black focus:border-black focus:ring-black focus:outline-none"
-                  />
-                  <button className="absolute top-1/2 right-4 -translate-y-1/2 rounded-full bg-transparent p-2 hover:bg-black transition flex items-center justify-center group">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={1.5}
-                      stroke="black" /* Default color is black */
-                      className="h-5 w-5 group-hover:stroke-white" /* Changes to white on hover */
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M21 21l-4.35-4.35M10.5 16.5a6 6 0 100-12 6 6 0 000 12z"
-                      />
-                    </svg>
-                  </button>
+                {/* Upload Button Section */}
+                <div
+                  className="flex items-center space-x-2 mt-8 cursor-pointer group border border-black/50 rounded-[20px] py-3 px-6 hover:border-black transition w-fit"
+                  onClick={handleOpenModal}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={2}
+                    stroke="currentColor"
+                    className="h-6 w-6 text-gray-500 group-hover:text-black transition"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M3 16.5V21h5.5M21 16.5V21h-5.5M12 3v13m0-13l-4 4m4-4l4 4"
+                    />
+                  </svg>
+                  <p className="text-lg font-medium text-gray-500 group-hover:text-black transition">
+                    Click Here to Upload
+                  </p>
                 </div>
-                <p className="mt-4 text-sm text-gray-500">
-                  Trending: Minimal, Abstract, Landscape, Nature, B&W, Amoled
-                </p>
               </div>
             </div>
           </div>
         </div>
         <div className="absolute bottom-0 left-0 z-[-1] opacity-30 lg:opacity-100"></div>
       </section>
+
+      {/* Images Modal */}
+      <Modal
+        isOpen={isImageModalOpen}
+        onClose={() => setIsImageModalOpen(false)}
+      >
+        <UploadImageForm />
+      </Modal>
     </>
   );
 };

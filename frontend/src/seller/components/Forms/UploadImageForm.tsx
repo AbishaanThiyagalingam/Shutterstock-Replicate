@@ -169,18 +169,23 @@
 
 import React, { useState } from "react";
 import { FaTrash, FaArrowRight, FaArrowLeft } from "react-icons/fa";
+import axios from "axios";
+import MultiSelectDropdown from "./MultiSelectDropdown";
 
 const TwoStepUploadModal: React.FC = () => {
   const [step, setStep] = useState(1);
   const [image, setImage] = useState<string | null>(null);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [price, setPrice] = useState<number | null>(null);
+  const [tags, setTags] = useState("");
+  const [takenBy, setTakenBy] = useState("");
+  const [message, setMessage] = useState("");
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setImage(reader.result as string);
-      };
-      reader.readAsDataURL(e.target.files[0]);
+      setImage(e.target.files[0]); // Store the File object directly
     }
   };
 
@@ -200,8 +205,81 @@ const TwoStepUploadModal: React.FC = () => {
     }
   };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Validate price
+    if (price === null || isNaN(price)) {
+      setMessage("Please enter a valid price.");
+      return;
+    }
+
+    // Validate required fields
+    if (
+      !image ||
+      !name.trim() ||
+      !description.trim() ||
+      selectedCategories.length === 0
+    ) {
+      setMessage("Please fill out all required fields.");
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("token"); // Get token from localStorage
+      if (!token) {
+        setMessage("Unauthorized: No token provided");
+        return;
+      }
+
+      // Process tags into an array
+      const tagsArray = tags
+        .split(",")
+        .map((tag) => tag.trim())
+        .filter((tag) => tag);
+
+      const formData = new FormData();
+      formData.append("image", image); // Use the File object
+      formData.append("name", name);
+      formData.append("description", description);
+      formData.append("price", price.toString());
+      formData.append("tags", JSON.stringify(tagsArray));
+      // formData.append("takenBy", takenBy);
+      formData.append("categories", JSON.stringify(selectedCategories));
+
+      console.log("FormData:");
+      for (let [key, value] of formData.entries()) {
+        console.log(`${key}:`, value);
+      }
+
+      const response = await axios.post(
+        "http://localhost:8080/images/upload",
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      setMessage(response.data.message || "Image uploaded successfully!");
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        setMessage(
+          err.response?.data?.message || "An error occurred during upload."
+        );
+      } else {
+        setMessage("An unexpected error occurred.");
+      }
+    }
+  };
+
   return (
-    <div className="flex flex-col w-full max-w-4xl bg-white rounded-lg shadow-lg overflow-hidden">
+    <form
+      className="flex flex-col w-full max-w-4xl bg-white rounded-lg shadow-lg overflow-hidden"
+      onSubmit={handleSubmit}
+    >
       {/* Top Progress Indicators */}
       <div className="flex items-center justify-between p-4 border-b">
         <div className="flex space-x-2">
@@ -226,13 +304,14 @@ const TwoStepUploadModal: React.FC = () => {
           {image ? (
             <div className="relative w-64 h-64 border rounded-lg overflow-hidden mb-4">
               <img
-                src={image}
+                src={URL.createObjectURL(image)}
                 alt="Preview"
                 className="w-full h-full object-cover"
               />
               <button
                 className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600"
                 onClick={handleImageRemove}
+                type="button"
               >
                 <FaTrash />
               </button>
@@ -270,6 +349,7 @@ const TwoStepUploadModal: React.FC = () => {
                 !image ? "opacity-50 cursor-not-allowed" : ""
               }`}
               disabled={!image}
+              type="button"
             >
               Next <FaArrowRight className="ml-2" />
             </button>
@@ -280,7 +360,7 @@ const TwoStepUploadModal: React.FC = () => {
       {step === 2 && (
         <div className="p-8">
           <h2 className="text-2xl font-bold mb-4 text-center">Image Details</h2>
-          <form className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div className="col-span-1 md:col-span-2">
               <label
                 htmlFor="name"
@@ -292,7 +372,10 @@ const TwoStepUploadModal: React.FC = () => {
                 type="text"
                 id="name"
                 placeholder="Enter Name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                required
               />
             </div>
             <div className="col-span-1 md:col-span-2">
@@ -305,7 +388,10 @@ const TwoStepUploadModal: React.FC = () => {
               <textarea
                 id="description"
                 rows={3}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
                 className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                required
               />
             </div>
             <div className="col-span-1">
@@ -319,28 +405,19 @@ const TwoStepUploadModal: React.FC = () => {
                 type="number"
                 id="price"
                 placeholder="Enter Price"
+                value={price !== null ? price : ""}
+                onChange={(e) => setPrice(parseFloat(e.target.value))}
                 className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                required
               />
             </div>
             <div className="col-span-1">
-              <label
-                htmlFor="category"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Category
-              </label>
-
-              <select
-                id="category"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-              >
-                <option value="">Select a category</option>
-                <option value="Nature">Nature</option>
-                <option value="Abstract">Abstract</option>
-                <option value="Portrait">Portrait</option>
-                <option value="Landscape">Landscape</option>
-              </select>
+              <MultiSelectDropdown
+                selectedCategories={selectedCategories}
+                setSelectedCategories={setSelectedCategories}
+              />
             </div>
+
             <div className="col-span-1">
               <label
                 htmlFor="tags"
@@ -352,6 +429,8 @@ const TwoStepUploadModal: React.FC = () => {
                 type="text"
                 id="tags"
                 placeholder="Enter Tags"
+                value={tags}
+                onChange={(e) => setTags(e.target.value)}
                 className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
               />
             </div>
@@ -366,27 +445,17 @@ const TwoStepUploadModal: React.FC = () => {
                 type="text"
                 id="takenBy"
                 placeholder="Enter Name"
+                value={takenBy}
+                onChange={(e) => setTakenBy(e.target.value)}
                 className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
               />
             </div>
-            <div className="col-span-1">
-              <label
-                htmlFor="date"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Date
-              </label>
-              <input
-                type="date"
-                id="date"
-                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-              />
-            </div>
-          </form>
+          </div>
           <div className="flex justify-between mt-6">
             <button
               onClick={handlePreviousStep}
               className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 flex items-center"
+              type="button"
             >
               <FaArrowLeft className="mr-2" /> Back
             </button>
@@ -397,9 +466,12 @@ const TwoStepUploadModal: React.FC = () => {
               Submit
             </button>
           </div>
+          {message && (
+            <p className="mt-4 text-center text-sm text-red-500">{message}</p>
+          )}
         </div>
       )}
-    </div>
+    </form>
   );
 };
 

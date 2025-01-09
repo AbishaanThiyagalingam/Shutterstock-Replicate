@@ -11,38 +11,122 @@ if (!fs.existsSync(uploadDir)) {
 
 // Create a new image
 exports.uploadImage = async (req, res) => {
-    const { title, description, price, categories } = req.body;
-    const uploadedBy = req.user.id; // Assuming JWT authentication is in use
+  const { name, description, price, categories, tags } = req.body;
+  const uploadedBy = req.user.id; // Assuming JWT authentication is in use
 
-    try {
-        // Validate file upload
-        if (!req.file) {
-            return res.status(400).json({ message: 'No file uploaded' });
-        }
+  try {
+    console.log("Incoming request body:", req.body);
+    console.log("Incoming file:", req.file);
 
-        // Validate categories
-        if (!categories || categories.length === 0) {
-            return res.status(400).json({ message: 'At least one category must be selected.' });
-        }
-
-        // Save file path
-        const imagePath = path.join(uploadDir, req.file.filename);
-
-        const newImage = new Image({
-            title,
-            description,
-            price,
-            imagePath,
-            uploadedBy,
-            categories: Array.isArray(categories) ? categories : [categories], // Ensure it's an array
-        });
-
-        await newImage.save();
-        res.status(201).json({ message: 'Image uploaded successfully!', image: newImage });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
+    // Validate file upload
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
     }
+
+    // Parse `categories` and `tags` from JSON strings
+    let categoriesArray, tagsArray;
+    try {
+      categoriesArray = JSON.parse(categories || "[]");
+      tagsArray = JSON.parse(tags || "[]");
+    } catch (err) {
+      console.error("Error parsing categories or tags:", err.message);
+      return res
+        .status(400)
+        .json({ message: "Invalid categories or tags format." });
+    }
+
+    // Validate categories
+    if (!Array.isArray(categoriesArray) || categoriesArray.length === 0) {
+      return res
+        .status(400)
+        .json({ message: "At least one category must be selected." });
+    }
+
+    // Validate price
+    if (!price || isNaN(price)) {
+      return res.status(400).json({ message: "Price must be a valid number." });
+    }
+
+    // Validate tags
+    if (!Array.isArray(tagsArray) || tagsArray.length === 0) {
+      return res
+        .status(400)
+        .json({ message: "At least one tag must be provided." });
+    }
+
+    console.log("Parsed categories:", categoriesArray);
+    console.log("Parsed tags:", tagsArray);
+
+    // Convert category names to ObjectIds
+    const categoryIds = await Category.find({
+      name: { $in: categoriesArray }, // Match category names
+    }).select("_id");
+
+    if (categoryIds.length !== categoriesArray.length) {
+      return res.status(400).json({
+        message: "One or more selected categories are invalid.",
+      });
+    }
+
+    // Save the file path
+    const imagePath = path.join("uploads", req.file.filename);
+
+    // Create a new image document
+    const newImage = new Image({
+      title: name,
+      description,
+      price,
+      imagePath,
+      uploadedBy,
+      categories: categoryIds.map((category) => category._id), // Use the ObjectIds
+      tags: tagsArray, // Array of strings
+    });
+
+    // Save to the database
+    await newImage.save();
+
+    res
+      .status(201)
+      .json({ message: "Image uploaded successfully!", image: newImage });
+  } catch (error) {
+    console.error("Upload image error:", error);
+    res.status(500).json({ error: error.message });
+  }
 };
+
+// exports.uploadImage = async (req, res) => {
+//     const { title, description, price, categories } = req.body;
+//     const uploadedBy = req.user.id; // Assuming JWT authentication is in use
+
+//     try {
+//         // Validate file upload
+//         if (!req.file) {
+//             return res.status(400).json({ message: 'No file uploaded' });
+//         }
+
+//         // Validate categories
+//         if (!categories || categories.length === 0) {
+//             return res.status(400).json({ message: 'At least one category must be selected.' });
+//         }
+
+//         // Save file path
+//         const imagePath = path.join(uploadDir, req.file.filename);
+
+//         const newImage = new Image({
+//             title,
+//             description,
+//             price,
+//             imagePath,
+//             uploadedBy,
+//             categories: Array.isArray(categories) ? categories : [categories], // Ensure it's an array
+//         });
+
+//         await newImage.save();
+//         res.status(201).json({ message: 'Image uploaded successfully!', image: newImage });
+//     } catch (error) {
+//         res.status(500).json({ error: error.message });
+//     }
+// };
 
 // Get all images
 exports.getAllImages = async (req, res) => {

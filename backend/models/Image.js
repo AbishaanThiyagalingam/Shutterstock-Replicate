@@ -30,6 +30,11 @@ const imageSchema = new mongoose.Schema(
         required: true,
       },
     ],
+    tags: [
+      {
+        type: String,
+      },
+    ],
     createdAt: {
       type: Date,
       default: Date.now,

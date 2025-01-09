@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import menuData from "./menuData";
 import Modal from "../Modal/Modal";
@@ -28,6 +28,28 @@ const Header = () => {
 
   // User dropdown
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        console.log("Click outside detected");
+        setUserDropdownOpen(false);
+      }
+    };
+
+    // Add event listener
+    document.addEventListener("mousedown", handleClickOutside);
+
+    // Cleanup event listener
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   useEffect(() => {
     window.addEventListener("scroll", handleStickyNavbar);
@@ -87,8 +109,37 @@ const Header = () => {
 
             {/* Navigation Section */}
             <div className="flex w-full items-center justify-end px-4">
-              {/* Mobile Burger Menu */}
+              {/* Mobile Layout */}
               <div className="flex items-center lg:hidden">
+                {/* User Icon for Mobile */}
+                <div className="relative mr-2" ref={dropdownRef}>
+                  <img
+                    src={user}
+                    alt="User"
+                    className="w-6 h-6 cursor-pointer"
+                    onClick={() => setUserDropdownOpen((prev) => !prev)}
+                  />
+                  <div
+                    className={`absolute right-0 mt-2 w-[200px] rounded bg-white/80 p-4 shadow-lg transition-opacity duration-300 dark:bg-[#FFFFFF] ${
+                      userDropdownOpen ? "block" : "hidden"
+                    }`}
+                  >
+                    <Link
+                      to="/account"
+                      className="block py-2 text-sm text-black/70 hover:text-black"
+                    >
+                      Account
+                    </Link>
+                    <button
+                      className="block w-full py-2 text-left text-sm text-black/70 hover:text-black"
+                      onClick={() => setIsSignUpOpen(true)}
+                    >
+                      Logout
+                    </button>
+                  </div>
+                </div>
+
+                {/* Mobile Burger Menu */}
                 <button
                   onClick={navbarToggleHandler}
                   id="navbarToggler"
@@ -111,36 +162,6 @@ const Header = () => {
                     }`}
                   />
                 </button>
-                {/* User Icon for Mobile */}
-                <div className="relative ml-4">
-                  <img
-                    src={user}
-                    alt="User"
-                    className="w-6 h-6 cursor-pointer"
-                    onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                  />
-                  <div
-                    className={`absolute right-0 mt-2 w-[200px] rounded bg-white/80 p-4 shadow-lg transition-opacity duration-300 dark:bg-[#FFFFFF] ${
-                      userDropdownOpen ? "block" : "hidden"
-                    }`}
-                  >
-                    <Link
-                      to="/account"
-                      className="block py-2 text-sm text-black/70 hover:text-black"
-                    >
-                      Account
-                    </Link>
-                    <button
-                      className="block w-full py-2 text-left text-sm text-black/70 hover:text-black"
-                      onClick={() => setIsSignUpOpen(true)}
-                      // onClick={() => {
-                      //   alert("Logged out!");
-                      // }}
-                    >
-                      Logout
-                    </button>
-                  </div>
-                </div>
               </div>
 
               {/* Navigation Links */}
@@ -237,13 +258,13 @@ const Header = () => {
                 </div>
               </nav>
 
-              {/* Desktop User Icon */}
-              <div className="hidden lg:block relative ml-8">
+              {/* Desktop Layout */}
+              <div className="hidden lg:block relative ml-8" ref={dropdownRef}>
                 <img
                   src={user}
                   alt="User"
-                  className="w-5 h-5 cursor-pointer"
-                  onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+                  className="w-6 h-6 cursor-pointer"
+                  onClick={() => setUserDropdownOpen((prev) => !prev)}
                 />
                 <div
                   className={`absolute right-0 mt-2 w-[200px] rounded bg-white/80 p-4 shadow-lg transition-opacity duration-300 dark:bg-[#FFFFFF] ${
@@ -259,9 +280,6 @@ const Header = () => {
                   <button
                     className="block w-full py-2 text-left text-sm text-black/70 hover:text-black"
                     onClick={() => setIsSignUpOpen(true)}
-                    // onClick={() => {
-                    //   alert("Logged out!");
-                    // }}
                   >
                     Logout
                   </button>

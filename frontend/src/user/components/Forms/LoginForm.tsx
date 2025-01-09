@@ -18,6 +18,7 @@ const LoginForm: React.FC = () => {
 
     if (token) {
       localStorage.setItem("token", token);
+      console.log("Token stored in localStorage:", token);
       navigate("/profile");
     }
   }, [navigate]);

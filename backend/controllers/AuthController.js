@@ -16,7 +16,7 @@ exports.googleCallback = (req, res, next) => {
     passport.authenticate('google', async (err, user) => {
         if (err || !user) {
             console.error('Authentication error:', err);
-            return res.status(401).json({ message: 'Authentication failed' });
+            return res.redirect('http://localhost:3000/login?error=Authentication+Failed');
         }
 
         try {
@@ -30,16 +30,44 @@ exports.googleCallback = (req, res, next) => {
                 metadata: { googleId: user.googleId },
             });
 
-            res.status(200).json({
-                message: 'Authentication successful',
-                token: token,
-            });
+            // Redirect to frontend with token and user ID in the query params
+            const redirectUrl = `http://localhost:3000/profile?token=${token}&id=${user._id}`;
+            res.redirect(redirectUrl);
         } catch (error) {
             console.error('Error generating token:', error);
-            res.status(500).json({ message: 'An error occurred while logging in.' });
+            res.redirect('http://localhost:3000/login?error=Server+Error');
         }
     })(req, res, next);
 };
+
+// exports.googleCallback = (req, res, next) => {
+//     passport.authenticate('google', async (err, user) => {
+//         if (err || !user) {
+//             console.error('Authentication error:', err);
+//             return res.status(401).json({ message: 'Authentication failed' });
+//         }
+
+//         try {
+//             // Generate JWT
+//             const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+//             // Record history
+//             await UserHistory.create({
+//                 userId: user._id,
+//                 action: UserActivities.GOOGLE_LOGIN,
+//                 metadata: { googleId: user.googleId },
+//             });
+
+//             res.status(200).json({
+//                 message: 'Authentication successful',
+//                 token: token,
+//             });
+//         } catch (error) {
+//             console.error('Error generating token:', error);
+//             res.status(500).json({ message: 'An error occurred while logging in.' });
+//         }
+//     })(req, res, next);
+// };
 
 // Handle Facebook login route
 exports.facebookLogin = passport.authenticate('facebook', { scope: ['email'] });

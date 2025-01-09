@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import menuData from "./menuData";
 import Modal from "../Modal/Modal";
@@ -16,6 +16,28 @@ const Header = () => {
 
   // User dropdown
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        console.log("Click outside detected");
+        setUserDropdownOpen(false);
+      }
+    };
+
+    // Add event listener
+    document.addEventListener("mousedown", handleClickOutside);
+
+    // Cleanup event listener
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   // Sticky Navbar
   const [sticky, setSticky] = useState(false);
@@ -36,6 +58,18 @@ const Header = () => {
       window.removeEventListener("scroll", handleStickyNavbar);
     };
   }, []);
+
+  // Handle token and redirect to profile if token exists in URL
+  useEffect(() => {
+    const queryParams = new URLSearchParams(window.location.search);
+    const token = queryParams.get("token");
+
+    if (token) {
+      localStorage.setItem("token", token);
+      console.log("Token stored in localStorage:", token);
+      navigate("/profile");
+    }
+  }, [navigate]);
 
   // Submenu handler
   const [openIndex, setOpenIndex] = useState<number>(-1);
@@ -75,15 +109,53 @@ const Header = () => {
                 }`}
               >
                 <h1 className="text-2xl font-bold text-white dark:text-white">
-                  ButterStockk
+                  ButterStock
                 </h1>
               </Link>
             </div>
 
             {/* Navigation and Icons */}
             <div className="flex items-center justify-end w-full">
-              {/* Navigation Toggle for Mobile */}
+              {/* Icons Section for Mobile */}
+              <div className="flex items-center lg:hidden mr-2 md:mr-4">
+                {/* Cart Icon */}
+                <Link to="/cart" className="relative">
+                  <img src={cart} alt="Cart" className="w-6 h-6" />
+                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-1">
+                    3
+                  </span>
+                </Link>
 
+                {/* User Icon */}
+                <div className="relative ml-4 md:ml-8" ref={dropdownRef}>
+                  <img
+                    src={user}
+                    alt="User"
+                    className="w-6 h-6 cursor-pointer"
+                    onClick={() => setUserDropdownOpen((prev) => !prev)}
+                  />
+                  <div
+                    className={`absolute right-0 mt-2 w-[200px] rounded bg-black/80 p-4 shadow-lg transition-opacity duration-300 dark:bg-[#000000] ${
+                      userDropdownOpen ? "block" : "hidden"
+                    }`}
+                  >
+                    <Link
+                      to="/account"
+                      className="block py-2 text-sm text-white/70 hover:text-white"
+                    >
+                      Account
+                    </Link>
+                    <button
+                      className="block w-full py-2 text-left text-sm text-white/70 hover:text-white"
+                      onClick={() => setIsSignUpOpen(true)}
+                    >
+                      Logout
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Burger Menu for Mobile */}
               <div className="flex items-center lg:hidden">
                 <button
                   onClick={navbarToggleHandler}
@@ -118,93 +190,91 @@ const Header = () => {
                     : "invisible top-[120%] opacity-0"
                 }`}
               >
-                <div className="md:max-h-[calc(100vh-6rem)] md:overflow-y-auto lg:overflow-visible md:pb-6 lg:pb-0 box-border">
-                  <ul className="block lg:flex lg:space-x-12">
-                    {/* Seller/Buyer Mode Toggler */}
-                    <li className="flex items-center lg:mb-0 mb-4">
-                      <label className="inline-flex items-center cursor-pointer">
-                        <span
-                          className={`mr-3 text-base ${
-                            isSellerMode
-                              ? "text-white/70 dark:text-white"
+                <ul className="block lg:flex lg:space-x-12">
+                  {/* Seller/Buyer Mode Toggler */}
+                  <li className="flex items-center lg:mb-0 mb-4">
+                    <label className="inline-flex items-center cursor-pointer">
+                      <span
+                        className={`mr-3 text-base ${
+                          isSellerMode
+                            ? "text-white/70 dark:text-white"
+                            : "text-white/70 hover:text-white dark:text-white/70 dark:hover:text-white"
+                        }`}
+                      >
+                        {isSellerMode ? "Seller Mode" : "Buyer Mode"}
+                      </span>
+                      <input
+                        type="checkbox"
+                        className="sr-only peer"
+                        checked={isSellerMode}
+                        onChange={handleModeChange}
+                      />
+                      <div className="relative w-11 h-6 bg-gray-300 rounded-full peer peer-focus:ring-2 peer-focus:ring-gray-500 dark:peer-focus:ring-black peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-black after:border-gray-500 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-white"></div>
+                    </label>
+                  </li>
+                  {menuData.map((menuItem, index) => (
+                    <li key={index} className="group relative">
+                      {menuItem.title === "Images" ? (
+                        <button
+                          onClick={() => setIsImageModalOpen(true)}
+                          className="flex py-2 text-base lg:mr-0 lg:inline-flex lg:px-0 lg:py-6 text-white/70 hover:text-white dark:text-white/70 dark:hover:text-white"
+                        >
+                          {menuItem.title}
+                        </button>
+                      ) : menuItem.path ? (
+                        <Link
+                          to={menuItem.path}
+                          className={`flex py-2 text-base lg:mr-0 lg:inline-flex lg:px-0 lg:py-6 ${
+                            usePathName === menuItem.path
+                              ? "text-white dark:text-white"
                               : "text-white/70 hover:text-white dark:text-white/70 dark:hover:text-white"
                           }`}
                         >
-                          {isSellerMode ? "Seller Mode" : "Buyer Mode"}
-                        </span>
-                        <input
-                          type="checkbox"
-                          className="sr-only peer"
-                          checked={isSellerMode}
-                          onChange={handleModeChange}
-                        />
-                        <div className="relative w-11 h-6 bg-gray-300 rounded-full peer peer-focus:ring-2 peer-focus:ring-gray-500 dark:peer-focus:ring-black peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-black after:border-gray-500 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-white"></div>
-                      </label>
-                    </li>
-                    {menuData.map((menuItem, index) => (
-                      <li key={index} className="group relative">
-                        {menuItem.title === "Images" ? (
-                          <button
-                            onClick={() => setIsImageModalOpen(true)}
-                            className="flex py-2 text-base lg:mr-0 lg:inline-flex lg:px-0 lg:py-6 text-white/70 hover:text-white dark:text-white/70 dark:hover:text-white"
+                          {menuItem.title}
+                        </Link>
+                      ) : (
+                        <>
+                          <p
+                            onClick={() => handleSubmenu(index)}
+                            className="flex cursor-pointer items-center justify-between py-2 text-base text-white/70 group-hover:text-white dark:text-white/70 dark:group-hover:text-white lg:mr-0 lg:inline-flex lg:px-0 lg:py-6"
                           >
                             {menuItem.title}
-                          </button>
-                        ) : menuItem.path ? (
-                          <Link
-                            to={menuItem.path}
-                            className={`flex py-2 text-base lg:mr-0 lg:inline-flex lg:px-0 lg:py-6 ${
-                              usePathName === menuItem.path
-                                ? "text-white dark:text-white"
-                                : "text-white/70 hover:text-white dark:text-white/70 dark:hover:text-white"
+                            <span className="pl-3">
+                              <svg width="25" height="24" viewBox="0 0 25 24">
+                                <path
+                                  fillRule="evenodd"
+                                  clipRule="evenodd"
+                                  d="M6.29289 8.8427C6.68342 8.45217 7.31658 8.45217 7.70711 8.8427L12 13.1356L16.2929 8.8427C16.6834 8.45217 17.3166 8.45217 17.7071 8.8427C18.0976 9.23322 18.0976 9.86639 17.7071 10.2569L12 15.964L6.29289 10.2569C5.90237 9.86639 5.90237 9.23322 6.29289 8.8427Z"
+                                  fill="currentColor"
+                                />
+                              </svg>
+                            </span>
+                          </p>
+                          <div
+                            className={`submenu relative left-0 top-full rounded-sm bg-black/80 transition-[top] duration-300 group-hover:opacity-100 dark:bg-[#000000] lg:invisible lg:absolute lg:top-[110%] lg:block lg:w-[250px] lg:p-4 lg:opacity-0 lg:shadow-lg lg:group-hover:visible lg:group-hover:top-full ${
+                              openIndex === index ? "block" : "hidden"
                             }`}
                           >
-                            {menuItem.title}
-                          </Link>
-                        ) : (
-                          <>
-                            <p
-                              onClick={() => handleSubmenu(index)}
-                              className="flex cursor-pointer items-center justify-between py-2 text-base text-white/70 group-hover:text-white dark:text-white/70 dark:group-hover:text-white lg:mr-0 lg:inline-flex lg:px-0 lg:py-6"
-                            >
-                              {menuItem.title}
-                              <span className="pl-3">
-                                <svg width="25" height="24" viewBox="0 0 25 24">
-                                  <path
-                                    fillRule="evenodd"
-                                    clipRule="evenodd"
-                                    d="M6.29289 8.8427C6.68342 8.45217 7.31658 8.45217 7.70711 8.8427L12 13.1356L16.2929 8.8427C16.6834 8.45217 17.3166 8.45217 17.7071 8.8427C18.0976 9.23322 18.0976 9.86639 17.7071 10.2569L12 15.964L6.29289 10.2569C5.90237 9.86639 5.90237 9.23322 6.29289 8.8427Z"
-                                    fill="currentColor"
-                                  />
-                                </svg>
-                              </span>
-                            </p>
-                            <div
-                              className={`submenu relative left-0 top-full rounded-sm bg-black/80 transition-[top] duration-300 group-hover:opacity-100 dark:bg-[#000000] lg:invisible lg:absolute lg:top-[110%] lg:block lg:w-[250px] lg:p-4 lg:opacity-0 lg:shadow-lg lg:group-hover:visible lg:group-hover:top-full ${
-                                openIndex === index ? "block" : "hidden"
-                              }`}
-                            >
-                              {menuItem.submenu?.map((submenuItem, index) => (
-                                <Link
-                                  to={submenuItem.path || "#"}
-                                  key={index}
-                                  className="block rounded py-2.5 text-sm text-white/70 hover:text-white dark:text-white/70 dark:hover:text-white lg:px-3"
-                                >
-                                  {submenuItem.title}
-                                </Link>
-                              ))}
-                            </div>
-                          </>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                            {menuItem.submenu?.map((submenuItem, index) => (
+                              <Link
+                                to={submenuItem.path || "#"}
+                                key={index}
+                                className="block rounded py-2.5 px-3 text-sm text-white/70 hover:bg-gray-700 hover:text-white dark:text-white/70 dark:hover:text-white"
+                              >
+                                {submenuItem.title}
+                              </Link>
+                            ))}
+                          </div>
+                        </>
+                      )}
+                    </li>
+                  ))}
+                </ul>
               </nav>
 
-              {/* Icons Section */}
-              <div className="flex items-center ml-4 md:ml-8">
-              {/* Cart Icon */}
+              {/* Icons Section for Laptops */}
+              <div className="hidden lg:flex items-center ml-4 md:ml-8">
+                {/* Cart Icon */}
                 <Link to="/cart" className="relative">
                   <img src={cart} alt="Cart" className="w-6 h-6" />
                   <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-1">
@@ -213,12 +283,12 @@ const Header = () => {
                 </Link>
 
                 {/* User Icon */}
-                <div className="flex items-center ml-4 md:ml-8">
-                <img
+                <div className="relative ml-4 md:ml-8" ref={dropdownRef}>
+                  <img
                     src={user}
                     alt="User"
                     className="w-6 h-6 cursor-pointer"
-                    onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+                    onClick={() => setUserDropdownOpen((prev) => !prev)}
                   />
                   <div
                     className={`absolute right-0 mt-2 w-[200px] rounded bg-black/80 p-4 shadow-lg transition-opacity duration-300 dark:bg-[#000000] ${
@@ -234,9 +304,6 @@ const Header = () => {
                     <button
                       className="block w-full py-2 text-left text-sm text-white/70 hover:text-white"
                       onClick={() => setIsSignUpOpen(true)}
-                      // onClick={() => {
-                      //   alert("Logged out!");
-                      // }}
                     >
                       Logout
                     </button>

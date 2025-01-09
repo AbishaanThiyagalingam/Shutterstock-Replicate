@@ -1,4 +1,5 @@
 import React from "react";
+import ReactDOM from "react-dom";
 
 interface ModalProps {
   isOpen: boolean;
@@ -9,10 +10,10 @@ interface ModalProps {
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
   if (!isOpen) return null;
 
-  return (
+  return ReactDOM.createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 overflow-y-auto"
-      aria-hidden={!isOpen}
+      className="fixed inset-0 z-[10000] flex items-center justify-center bg-black bg-opacity-50 overflow-y-auto"
+      style={{ position: "fixed", top: 0, left: 0, width: "100%", height: "100%" }}
     >
       <div className="relative p-4 w-full max-w-4xl max-h-full">
         {/* Modal content */}
@@ -45,7 +46,8 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
           <div className="p-4 md:p-5 space-y-4">{children}</div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 
