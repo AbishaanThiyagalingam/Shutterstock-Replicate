@@ -14,6 +14,7 @@ router.get('/facebook/callback', authController.facebookCallback);
 
 router.get('/profile', authMiddleware.authenticate, authController.getUserProfile);
 router.post('/become-seller', authMiddleware.authenticate, authController.becomeSeller);
+router.get('/is-seller', authMiddleware.authenticate, authController.isSeller);
 router.post('/register', authController.register);
 router.post('/login', authController.login);
 router.get('/verify-email', pendingUserController.verifyEmail);
