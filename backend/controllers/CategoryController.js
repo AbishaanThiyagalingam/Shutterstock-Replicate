@@ -42,7 +42,7 @@ exports.createCategory = async (req, res) => {
   const thumbnail = req.file ? `uploads/${req.file.filename}` : null;
 
   if (!name || !description) {
-    return res.status(400).json({ error: "Name and description are required." });
+    return res.status(400).json({ message: "Name and description are required." });
   }
 
   try {
@@ -56,7 +56,7 @@ exports.createCategory = async (req, res) => {
     res.status(201).json(newCategory);
   } catch (error) {
     logger.error("Error Creating Category:", error); // Debug log
-    res.status(400).json({ error: error.message });
+    res.status(400).json({ message: error.message });
   }
 };
 
@@ -68,7 +68,7 @@ exports.getAllCategories = async (req, res) => {
     const categories = await Category.find();
     res.status(200).json(categories);
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch categories." });
+    res.status(500).json({ message: "Failed to fetch categories." });
   }
 };
 
@@ -78,7 +78,7 @@ exports.updateCategory = async (req, res) => {
   const thumbnail = req.file ? `uploads/${req.file.filename}` : null;
 
   if (!name || !description) {
-    return res.status(400).json({ error: "Name and description are required." });
+    return res.status(400).json({ message: "Name and description are required." });
   }
 
   try {
@@ -94,12 +94,12 @@ exports.updateCategory = async (req, res) => {
     );
 
     if (!updatedCategory) {
-      return res.status(404).json({ error: "Category not found." });
+      return res.status(404).json({ message: "Category not found." });
     }
 
     res.status(200).json(updatedCategory);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(400).json({ message: error.message });
   }
 };
 
@@ -109,11 +109,11 @@ exports.deleteCategory = async (req, res) => {
   try {
     const category = await Category.findByIdAndDelete(req.params.id);
     if (!category) {
-      return res.status(404).json({ error: "Category not found." });
+      return res.status(404).json({ message: "Category not found." });
     }
     res.status(200).json({ message: "Category deleted." });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(400).json({ message: error.message });
   }
 };
 
@@ -124,7 +124,7 @@ exports.getImage = (req, res) => {
 
   // Check if file exists
   if (!fs.existsSync(filePath)) {
-    return res.status(404).json({ error: "Image not found." });
+    return res.status(404).json({ message: "Image not found." });
   }
 
   // Handle request abort
@@ -141,7 +141,7 @@ exports.getImage = (req, res) => {
       }
       logger.error("Error sending file:", err);
       if (!res.headersSent) {
-        res.status(500).json({ error: "Failed to send image." });
+        res.status(500).json({ message: "Failed to send image." });
       }
     }
   });

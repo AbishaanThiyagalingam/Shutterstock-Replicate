@@ -30,16 +30,12 @@ exports.uploadImage = async (req, res) => {
       tagsArray = JSON.parse(tags || "[]");
     } catch (err) {
       logger.error("Error parsing categories or tags:", err.message);
-      return res
-        .status(400)
-        .json({ message: "Invalid categories or tags format." });
+      return res.status(400).json({ message: "Invalid categories or tags format." });
     }
 
     // Validate categories
     if (!Array.isArray(categoriesArray) || categoriesArray.length === 0) {
-      return res
-        .status(400)
-        .json({ message: "At least one category must be selected." });
+      return res.status(400).json({ message: "At least one category must be selected." });
     }
 
     // Validate price
@@ -49,9 +45,7 @@ exports.uploadImage = async (req, res) => {
 
     // Validate tags
     if (!Array.isArray(tagsArray) || tagsArray.length === 0) {
-      return res
-        .status(400)
-        .json({ message: "At least one tag must be provided." });
+      return res.status(400).json({ message: "At least one tag must be provided." });
     }
 
     logger.log("Parsed categories:", categoriesArray);
@@ -90,7 +84,7 @@ exports.uploadImage = async (req, res) => {
       .json({ message: "Image uploaded successfully!", image: newImage });
   } catch (error) {
     logger.error("Upload image error:", error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -124,7 +118,7 @@ exports.uploadImage = async (req, res) => {
 //         await newImage.save();
 //         res.status(201).json({ message: 'Image uploaded successfully!', image: newImage });
 //     } catch (error) {
-//         res.status(500).json({ error: error.message });
+//         res.status(500).json({ message: error.message });
 //     }
 // };
 
@@ -134,7 +128,7 @@ exports.getAllImages = async (req, res) => {
     const images = await Image.find().populate("categories uploadedBy"); // Populate category and user details
     res.status(200).json(images);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -146,7 +140,7 @@ exports.getImagesByCategory = async (req, res) => {
       .populate("categories uploadedBy"); // Populate category and user details
     res.status(200).json(images);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -161,7 +155,7 @@ exports.updateImage = async (req, res) => {
     ).populate("categories uploadedBy"); // Populate category and user details
     res.status(200).json(updatedImage);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -180,7 +174,7 @@ exports.deleteImage = async (req, res) => {
     await Image.findByIdAndDelete(req.params.id);
     res.status(200).json({ message: "Image deleted successfully" });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -193,6 +187,6 @@ exports.getImageById = async (req, res) => {
     }
     res.status(200).json(image);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
