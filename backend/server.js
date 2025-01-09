@@ -112,5 +112,5 @@ app.use('/admin', adminRoutes);
 
 // Start the Server
 app.listen(port, () => {
-  logger.info(`Shutterstock-Replicate Server listening on port ${port}`);
+  logger.info(`ButterStock-Replicate Server listening on port ${port}`);
 });

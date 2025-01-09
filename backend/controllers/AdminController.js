@@ -17,7 +17,7 @@ exports.addAdmin = async (req, res) => {
 
         res.status(201).json({ message: 'Admin added successfully!', admin });
     } catch (error) {
-        console.error('Error adding admin:', error);
+        logger.error('Error adding admin:', error);
         res.status(500).json({ message: 'An error occurred while adding the admin.' });
     }
 };
@@ -44,7 +44,7 @@ exports.adminLogin = async (req, res) => {
 
         res.status(200).json({ token, admin: { id: admin._id, email: admin.email, role: admin.role } });
     } catch (error) {
-        console.error('Error logging in admin:', error);
+        logger.error('Error logging in admin:', error);
         res.status(500).json({ message: 'An error occurred while logging in.' });
     }
 };
@@ -55,7 +55,7 @@ exports.getAllAdmins = async (req, res) => {
         const admins = await Admin.find().select('-password'); // Exclude password
         res.status(200).json(admins);
     } catch (error) {
-        console.error('Error fetching admins:', error);
+          logger.error('Error fetching admins:', error);
         res.status(500).json({ message: 'An error occurred while fetching admins.' });
     }
 };

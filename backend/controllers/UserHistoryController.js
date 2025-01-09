@@ -9,7 +9,7 @@ exports.getUserHistory = async (req, res) => {
         }
         res.status(200).json(history);
     } catch (error) {
-        console.error('Error fetching user history:', error);
+        logger.error('Error fetching user history:', error);
         res.status(500).json({ message: 'An error occurred while fetching history.' });
     }
 };
@@ -32,7 +32,7 @@ exports.addUserHistory = async (req, res) => {
         await historyEntry.save();
         res.status(201).json({ message: 'User history entry added successfully!', historyEntry });
     } catch (error) {
-        console.error('Error adding user history:', error);
+        logger.error('Error adding user history:', error);
         res.status(500).json({ message: 'An error occurred while adding history.' });
     }
 };
@@ -48,7 +48,7 @@ exports.deleteUserHistory = async (req, res) => {
         }
         res.status(200).json({ message: 'User history entry deleted successfully.', deletedHistory });
     } catch (error) {
-        console.error('Error deleting user history:', error);
+        logger.error('Error deleting user history:', error);
         res.status(500).json({ message: 'An error occurred while deleting history.' });
     }
 };
@@ -61,7 +61,7 @@ exports.clearUserHistory = async (req, res) => {
         const deletedHistory = await UserHistory.deleteMany({ userId });
         res.status(200).json({ message: 'All user history cleared successfully.', deletedCount: deletedHistory.deletedCount });
     } catch (error) {
-        console.error('Error clearing user history:', error);
+        logger.error('Error clearing user history:', error);
         res.status(500).json({ message: 'An error occurred while clearing history.' });
     }
 };

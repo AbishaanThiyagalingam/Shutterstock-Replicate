@@ -15,7 +15,7 @@ exports.googleLogin = passport.authenticate('google', { scope: ['profile', 'emai
 exports.googleCallback = (req, res, next) => {
     passport.authenticate('google', async (err, user) => {
         if (err || !user) {
-            console.error('Authentication error:', err);
+            logger.error('Authentication error:', err);
             return res.redirect('http://localhost:3000/login?error=Authentication+Failed');
         }
 
@@ -34,7 +34,7 @@ exports.googleCallback = (req, res, next) => {
             const redirectUrl = `http://localhost:3000/profile?token=${token}&id=${user._id}`;
             res.redirect(redirectUrl);
         } catch (error) {
-            console.error('Error generating token:', error);
+            logger.error('Error generating token:', error);
             res.redirect('http://localhost:3000/login?error=Server+Error');
         }
     })(req, res, next);
@@ -43,7 +43,7 @@ exports.googleCallback = (req, res, next) => {
 // exports.googleCallback = (req, res, next) => {
 //     passport.authenticate('google', async (err, user) => {
 //         if (err || !user) {
-//             console.error('Authentication error:', err);
+//             logger.error('Authentication error:', err);
 //             return res.status(401).json({ message: 'Authentication failed' });
 //         }
 
@@ -63,7 +63,7 @@ exports.googleCallback = (req, res, next) => {
 //                 token: token,
 //             });
 //         } catch (error) {
-//             console.error('Error generating token:', error);
+//             logger.error('Error generating token:', error);
 //             res.status(500).json({ message: 'An error occurred while logging in.' });
 //         }
 //     })(req, res, next);
@@ -75,7 +75,7 @@ exports.facebookLogin = passport.authenticate('facebook', { scope: ['email'] });
 exports.facebookCallback = (req, res, next) => {
     passport.authenticate('facebook', async (err, user) => {
         if (err || !user) {
-            console.error('Authentication error:', err);
+            logger.error('Authentication error:', err);
             return res.status(401).json({ message: 'Authentication failed' });
         }
 
@@ -95,7 +95,7 @@ exports.facebookCallback = (req, res, next) => {
                 token: token,
             });
         } catch (error) {
-            console.error('Error generating token:', error);
+            logger.error('Error generating token:', error);
             res.status(500).json({ message: 'An error occurred while logging in.' });
         }
     })(req, res, next);
@@ -110,7 +110,7 @@ exports.getUserProfile = async (req, res) => {
         }
         res.status(200).json(user);
     } catch (error) {
-        console.error('Error fetching profile:', error);
+        logger.error('Error fetching profile:', error);
         res.status(500).json({ message: 'An error occurred while fetching the profile.' });
     }
 };
@@ -130,7 +130,7 @@ exports.isSeller = async (req, res) => {
             isSeller 
         })
     } catch (error) {
-        console.error('Error fetching profile:', error);
+        logger.error('Error fetching profile:', error);
         res.status(500).json({ message: 'An error occurred while fetching the profile.' });
     }
 };
@@ -162,7 +162,7 @@ exports.becomeSeller = async (req, res) => {
 
         res.status(200).json({ message: 'Your details have been submitted. You are now a seller!' });
     } catch (error) {
-        console.error('Error updating user:', error);
+        logger.error('Error updating user:', error);
         res.status(500).json({ message: 'An error occurred while processing your request.' });
     }
 };
@@ -237,7 +237,7 @@ exports.register = async (req, res) => {
 
         res.status(201).json({ message: 'Registration successful. Please check your email to verify your account.' });
     } catch (error) {
-        console.error('Error during registration:', error);
+        logger.error('Error during registration:', error);
         res.status(500).json({ message: 'An error occurred while registering.' });
     }
 };
@@ -268,7 +268,7 @@ exports.login = async (req, res) => {
 
         res.status(200).json({ token, user: { id: user._id, email: user.email, role: user.role } });
     } catch (error) {
-        console.error('Error logging in:', error);
+        logger.error('Error logging in:', error);
         res.status(500).json({ message: 'An error occurred while logging in.' });
     }
 };
@@ -280,7 +280,7 @@ exports.getAllUsers = async (req, res) => {
         const users = await User.find().select('-password'); 
         res.status(200).json(users);
     } catch (error) {
-        console.error('Error fetching users:', error);
+        logger.error('Error fetching users:', error);
         res.status(500).json({ message: 'An error occurred while fetching users.' });
     }
 };
@@ -310,7 +310,7 @@ exports.getUserById = async (req, res) => {
 
         res.status(200).json(user);
     } catch (error) {
-        console.error('Error fetching user by ID:', error);
+        logger.error('Error fetching user by ID:', error);
         res.status(500).json({ message: 'An error occurred while fetching the user.' });
     }
 };

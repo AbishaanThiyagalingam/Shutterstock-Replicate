@@ -15,8 +15,8 @@ exports.uploadImage = async (req, res) => {
   const uploadedBy = req.user.id; // Assuming JWT authentication is in use
 
   try {
-    console.log("Incoming request body:", req.body);
-    console.log("Incoming file:", req.file);
+    logger.log("Incoming request body:", req.body);
+    logger.log("Incoming file:", req.file);
 
     // Validate file upload
     if (!req.file) {
@@ -29,7 +29,7 @@ exports.uploadImage = async (req, res) => {
       categoriesArray = JSON.parse(categories || "[]");
       tagsArray = JSON.parse(tags || "[]");
     } catch (err) {
-      console.error("Error parsing categories or tags:", err.message);
+      logger.error("Error parsing categories or tags:", err.message);
       return res
         .status(400)
         .json({ message: "Invalid categories or tags format." });
@@ -54,8 +54,8 @@ exports.uploadImage = async (req, res) => {
         .json({ message: "At least one tag must be provided." });
     }
 
-    console.log("Parsed categories:", categoriesArray);
-    console.log("Parsed tags:", tagsArray);
+    logger.log("Parsed categories:", categoriesArray);
+    logger.log("Parsed tags:", tagsArray);
 
     // Convert category names to ObjectIds
     const categoryIds = await Category.find({
@@ -89,7 +89,7 @@ exports.uploadImage = async (req, res) => {
       .status(201)
       .json({ message: "Image uploaded successfully!", image: newImage });
   } catch (error) {
-    console.error("Upload image error:", error);
+    logger.error("Upload image error:", error);
     res.status(500).json({ error: error.message });
   }
 };

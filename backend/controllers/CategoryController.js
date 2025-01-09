@@ -21,7 +21,7 @@ const storage = multer.diskStorage({
 const upload = multer({
   storage,
   fileFilter: (req, file, cb) => {
-    console.log("Multer File Received:", file); // Debug log
+    logger.log("Multer File Received:", file); // Debug log
     const fileTypes = /jpeg|jpg|png|gif|webp/;
     const extname = fileTypes.test(path.extname(file.originalname).toLowerCase());
     const mimetype = fileTypes.test(file.mimetype);
@@ -37,7 +37,7 @@ const upload = multer({
 
 // create category
 exports.createCategory = async (req, res) => {
-  console.log("File Received:", req.file); // Debug log
+  logger.log("File Received:", req.file); // Debug log
   const { name, description } = req.body;
   const thumbnail = req.file ? `uploads/${req.file.filename}` : null;
 
@@ -51,11 +51,11 @@ exports.createCategory = async (req, res) => {
       description,
       thumbnail,
     });
-    console.log("Saving Category:", newCategory); // Debug log
+    logger.log("Saving Category:", newCategory); // Debug log
     await newCategory.save();
     res.status(201).json(newCategory);
   } catch (error) {
-    console.error("Error Creating Category:", error); // Debug log
+    logger.error("Error Creating Category:", error); // Debug log
     res.status(400).json({ error: error.message });
   }
 };
@@ -129,17 +129,17 @@ exports.getImage = (req, res) => {
 
   // Handle request abort
   req.on('aborted', () => {
-    console.error(`Request aborted while sending file: ${filename}`);
+    logger.error(`Request aborted while sending file: ${filename}`);
   });
 
   // Send the file
   res.sendFile(filePath, (err) => {
     if (err) {
       if (err.code === 'ECONNABORTED') {
-        console.error(`Request aborted for file: ${filename}`);
+        logger.error(`Request aborted for file: ${filename}`);
         return;
       }
-      console.error("Error sending file:", err);
+      logger.error("Error sending file:", err);
       if (!res.headersSent) {
         res.status(500).json({ error: "Failed to send image." });
       }
