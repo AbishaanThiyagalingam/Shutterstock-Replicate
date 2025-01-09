@@ -29,7 +29,7 @@ const UserHistory: React.FC = () => {
   return (
     <div className="flex">
       {/* Sidebar */}
-      <Sidebar />
+      {/* <Sidebar /> */}
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col">

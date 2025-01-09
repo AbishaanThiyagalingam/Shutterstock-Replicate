@@ -1,12 +1,21 @@
 import React from "react";
+import { Link, useLocation } from "react-router-dom";
 
-const Sidebar: React.FC = () => {
+interface SidebarProps {
+  onTitleChange: (newTitle: string) => void;
+}
+
+const SideBar: React.FC<SidebarProps> = ({ onTitleChange }) => {
+  const location = useLocation();
+
+  const isActive = (path: string) => location.pathname === path;
+
   return (
     <div className="bg-white shadow-md w-64 h-screen p-4 flex flex-col">
       <h1 className="text-2xl font-bold mb-6">ButterStock</h1>
       <div className="mb-8">
         <img
-          src="https://via.placeholder.com/50" // Replace with the actual user image
+          src="https://via.placeholder.com/50"
           alt="User Avatar"
           className="w-12 h-12 rounded-full mb-2"
         />
@@ -14,39 +23,70 @@ const Sidebar: React.FC = () => {
         <p className="text-sm text-gray-600">loremipsum@gmail.com</p>
       </div>
       <nav className="flex flex-col gap-4">
-        <a
-          href="#"
-          className="text-black hover:text-blue-500"
+        <Link
+          to="/admin/dashboard"
+          onClick={() => onTitleChange("Dashboard")}
+          className={`p-2 rounded ${
+            isActive("/admin/dashboard")
+              ? "bg-blue-100 text-blue-500 font-bold"
+              : "text-black hover:text-blue-500"
+          }`}
         >
           Dashboard
-        </a>
-        <a
-          href="#"
-          className="text-black hover:text-blue-500"
+        </Link>
+        <Link
+          to="/admin/category"
+          onClick={() => onTitleChange("Category Management")}
+          className={`p-2 rounded ${
+            isActive("/admin/category")
+              ? "bg-blue-100 text-blue-500 font-bold"
+              : "text-black hover:text-blue-500"
+          }`}
         >
-          Content
-        </a>
-        <a
-          href="#"
-          className="text-black hover:text-blue-500"
+          Category
+        </Link>
+        <Link
+          to="/admin/image"
+          onClick={() => onTitleChange("Image Management")}
+          className={`p-2 rounded ${
+            isActive("/admin/image")
+              ? "bg-blue-100 text-blue-500 font-bold"
+              : "text-black hover:text-blue-500"
+          }`}
+        >
+          Images
+        </Link>
+        <Link
+          to="/admin/user"
+          onClick={() => onTitleChange("User Management")}
+          className={`p-2 rounded ${
+            isActive("/admin/user")
+              ? "bg-blue-100 text-blue-500 font-bold"
+              : "text-black hover:text-blue-500"
+          }`}
         >
           Users
-        </a>
-        <a
-          href="#"
-          className="text-blue-500 font-bold bg-blue-100 py-1 px-2 rounded-lg"
+        </Link>
+        <Link
+          to="/admin/userHistory"
+          onClick={() => onTitleChange("User History")}
+          className={`p-2 rounded ${
+            isActive("/admin/userHistory")
+              ? "bg-blue-100 text-blue-500 font-bold"
+              : "text-black hover:text-blue-500"
+          }`}
         >
-          History
-        </a>
-        <a
-          href="#"
-          className="text-black hover:text-blue-500 mt-6"
+          User History
+        </Link>
+        <Link
+          to="#"
+          className="text-black hover:text-blue-500 p-2 rounded"
         >
           Log Out
-        </a>
+        </Link>
       </nav>
     </div>
   );
 };
 
-export default Sidebar;
+export default SideBar;

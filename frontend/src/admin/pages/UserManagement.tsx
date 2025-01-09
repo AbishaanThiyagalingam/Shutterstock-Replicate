@@ -6,13 +6,10 @@ import DeleteModal from "../components/Category/DeleteModal";
 import axios from "axios";
 import { FaEdit, FaTrashAlt } from "react-icons/fa";
 import UpdateCategoryModal from "../components/Category/UpdateCategoryModal";
-import { ThumbsDown } from "lucide-react";
 
-const CategoryManagement: React.FC = () => {
+const UserManagement: React.FC = () => {
   const [categories, setCategories] = useState([]);
-  const [modalType, setModalType] = useState<
-    "add" | "update" | "delete" | null
-  >(null);
+  const [modalType, setModalType] = useState<"add" | "update" | "delete" | null>(null);
   const [currentCategory, setCurrentCategory] = useState<any>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -24,18 +21,7 @@ const CategoryManagement: React.FC = () => {
   const fetchCategories = async () => {
     try {
       const response = await axios.get("http://localhost:8080/categories");
-      const updatedCategories = response.data.map((category: any) => ({
-        ...category,
-        thumbnailUrl: category.thumbnail
-          ? `http://localhost:8080/categories/${category.thumbnail.replace("uploads/", "")}` // Remove "uploads/" from the thumbnail path
-          : null,
-      }));
-  
-      setCategories(updatedCategories);
-  
-      // Extract and log only the updated thumbnails
-      const thumbnails = updatedCategories.map((cat) => cat.thumbnailUrl);
-      console.log("Updated Thumbnails:", thumbnails);
+      setCategories(response.data);
     } catch (error) {
       console.error("Failed to fetch categories:", error);
     }
@@ -53,10 +39,7 @@ const CategoryManagement: React.FC = () => {
 
   const handleUpdateCategory = async (categoryId: string, updatedData: any) => {
     try {
-      await axios.put(
-        `http://localhost:8080/categories/${categoryId}`,
-        updatedData
-      );
+      await axios.put(`http://localhost:8080/categories/${categoryId}`, updatedData);
       fetchCategories();
       setModalType(null);
     } catch (error) {
@@ -105,7 +88,7 @@ const CategoryManagement: React.FC = () => {
         <Header />
         <div className="p-4">
           <div className="flex justify-between items-center mb-4">
-            <h1 className="text-2xl font-bold">Category Management</h1>
+            <h1 className="text-2xl font-bold">User Management</h1>
             <button
               className="px-4 py-2 bg-blue-500 text-white rounded"
               onClick={() => setModalType("add")}
@@ -129,26 +112,18 @@ const CategoryManagement: React.FC = () => {
                   <tr key={category._id} className="border-t border-gray-200">
                     {/* Thumbnail */}
                     <td className="p-4">
-                      {category.thumbnailUrl ? (
-                        <img
-                          src={category.thumbnailUrl}
-                          alt={category.name}
-                          className="w-16 h-16 object-cover rounded"
-                        />
-                      ) : (
-                        <div className="w-16 h-16 flex items-center justify-center bg-gray-100 text-gray-500 rounded">
-                          No Image
-                        </div>
-                      )}
+                      <img
+                        src={`http://localhost:8080/${category.thumbnail}`}
+                        alt={category.name}
+                        className="w-16 h-16 object-cover rounded"
+                      />
                     </td>
                     {/* Name */}
                     <td className="p-4">{category.name}</td>
                     {/* Description */}
                     <td className="p-4">{category.description}</td>
                     {/* Created At */}
-                    <td className="p-4">
-                      {new Date(category.createdAt).toLocaleString()}
-                    </td>
+                    <td className="p-4">{new Date(category.createdAt).toLocaleString()}</td>
                     {/* Actions */}
                     <td className="p-4 flex items-center space-x-2">
                       <button
@@ -200,9 +175,7 @@ const CategoryManagement: React.FC = () => {
               <button
                 onClick={handlePreviousPage}
                 className={`px-4 py-2 bg-gray-300 text-gray-700 rounded ${
-                  currentPage === 1
-                    ? "opacity-50 cursor-not-allowed"
-                    : "hover:bg-gray-400"
+                  currentPage === 1 ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-400"
                 }`}
                 disabled={currentPage === 1}
               >
@@ -214,9 +187,7 @@ const CategoryManagement: React.FC = () => {
               <button
                 onClick={handleNextPage}
                 className={`px-4 py-2 bg-gray-300 text-gray-700 rounded ${
-                  currentPage === totalPages
-                    ? "opacity-50 cursor-not-allowed"
-                    : "hover:bg-gray-400"
+                  currentPage === totalPages ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-400"
                 }`}
                 disabled={currentPage === totalPages}
               >
@@ -235,9 +206,7 @@ const CategoryManagement: React.FC = () => {
           {modalType === "update" && (
             <UpdateCategoryModal
               category={currentCategory}
-              onSubmit={(data: any) =>
-                handleUpdateCategory(currentCategory._id, data)
-              }
+              onSubmit={(data: any) => handleUpdateCategory(currentCategory._id, data)}
               onClose={() => setModalType(null)}
             />
           )}
@@ -254,4 +223,4 @@ const CategoryManagement: React.FC = () => {
   );
 };
 
-export default CategoryManagement;
+export default UserManagement;
