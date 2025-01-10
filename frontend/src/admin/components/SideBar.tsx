@@ -116,6 +116,18 @@ const SideBar: React.FC<SidebarProps> = ({ onTitleChange }) => {
         >
           User History
         </Link>
+
+        <Link
+          to="/admin/manage-admin"
+          onClick={() => onTitleChange("Admins")}
+          className={`p-2 rounded ${
+            isActive("/admin/manage-admin")
+              ? "bg-blue-100 text-blue-500 font-bold"
+              : "text-black hover:text-blue-500"
+          }`}
+        >
+          Admins
+        </Link>
         <Link
           to="#"
           className="text-black hover:text-blue-500 p-2 rounded"
