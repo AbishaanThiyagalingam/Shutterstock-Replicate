@@ -14,6 +14,7 @@ const CategoryManagement: React.FC = () => {
   const [currentCategory, setCurrentCategory] = useState<any>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const token = localStorage.getItem("admintoken");
 
   useEffect(() => {
     fetchCategories();
@@ -21,7 +22,12 @@ const CategoryManagement: React.FC = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/categories");
+      const response = await axios.get("http://localhost:8080/categories", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
       const updatedCategories = response.data.map((category: any) => ({
         ...category,
         thumbnailUrl: category.thumbnail
@@ -41,8 +47,11 @@ const CategoryManagement: React.FC = () => {
 
   const handleAddCategory = async (category: any) => {
     try {
-      await axios.post("http://localhost:8080/categories", category);
-      fetchCategories();
+      await axios.post("http://localhost:8080/categories", category, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });      fetchCategories();
       setModalType(null);
     } catch (error) {
       console.error("Failed to add category:", error);
@@ -53,7 +62,12 @@ const CategoryManagement: React.FC = () => {
     try {
       await axios.put(
         `http://localhost:8080/categories/${categoryId}`,
-        updatedData
+        updatedData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       fetchCategories();
       setModalType(null);
@@ -64,8 +78,11 @@ const CategoryManagement: React.FC = () => {
 
   const handleDeleteCategory = async (categoryId: string) => {
     try {
-      await axios.delete(`http://localhost:8080/categories/${categoryId}`);
-      fetchCategories();
+      await axios.delete(`http://localhost:8080/categories/${categoryId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });      fetchCategories();
       setModalType(null);
     } catch (error) {
       console.error("Failed to delete category:", error);

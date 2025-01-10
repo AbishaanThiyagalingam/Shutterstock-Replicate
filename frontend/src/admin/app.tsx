@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import AdminHome from "./pages/Home";
 import UserHistory from "./pages/UserHistory";
 import CategoryManagement from "./pages/CategoryManagement";
@@ -11,17 +11,24 @@ import Header from "../admin/components/Header";
 
 const AdminApp: React.FC = () => {
   const [title, setTitle] = useState("Dashboard"); // State to manage header title
+  const location = useLocation();
 
   const handleTitleChange = (newTitle: string) => {
     setTitle(newTitle);
   };
 
+  // Define routes where the SideBar and Header should NOT render
+  const excludedRoutes = ["/admin"];
+
+  // Check if the current route is excluded
+  const isExcludedRoute = excludedRoutes.includes(location.pathname);
+
   return (
     <div className="flex">
-      {/* Pass handleTitleChange as a prop to SideBar */}
-      <SideBar onTitleChange={handleTitleChange} />
-      <div className="flex-1">
-        <Header title={title} />
+      {/* Render SideBar and Header only if the route is not excluded */}
+      {!isExcludedRoute && <SideBar onTitleChange={handleTitleChange} />}
+      <div className={`flex-1 ${isExcludedRoute}`}>
+        {!isExcludedRoute && <Header title={title} />}
         <Routes>
           <Route path="/" element={<AdminHome />} />
           <Route path="/dashboard" element={<Dashboard />} />

@@ -1,12 +1,50 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import axios from "axios";
+import { jwtDecode } from "jwt-decode"; // Correct named import
 
 interface SidebarProps {
   onTitleChange: (newTitle: string) => void;
 }
 
+interface AdminDetails {
+  name: string;
+  email: string;
+}
+
 const SideBar: React.FC<SidebarProps> = ({ onTitleChange }) => {
   const location = useLocation();
+  const [adminDetails, setAdminDetails] = useState<AdminDetails | null>(null);
+
+  useEffect(() => {
+    const fetchAdminDetails = async () => {
+      const token = localStorage.getItem("admintoken");
+
+      if (!token) {
+        console.error("No token found");
+        return;
+      }
+
+      try {
+        // Decode the token to extract admin ID
+        const decodedToken: any = jwtDecode(token);
+        const adminId = decodedToken.id;
+
+        // Fetch admin details from the backend
+        const response = await axios.get(`http://localhost:8080/admin/${adminId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        setAdminDetails(response.data);
+      } catch (error) {
+        console.error("Failed to fetch admin details:", error);
+      }
+    };
+
+    fetchAdminDetails();
+  }, []);
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -19,8 +57,8 @@ const SideBar: React.FC<SidebarProps> = ({ onTitleChange }) => {
           alt="User Avatar"
           className="w-12 h-12 rounded-full mb-2"
         />
-        <p className="text-lg font-semibold">Lorem Ipsum</p>
-        <p className="text-sm text-gray-600">loremipsum@gmail.com</p>
+        <p className="text-lg font-semibold">{adminDetails?.name || "Admin"}</p>
+        <p className="text-sm text-gray-600">{adminDetails?.email || "admin@example.com"}</p>
       </div>
       <nav className="flex flex-col gap-4">
         <Link
@@ -81,6 +119,10 @@ const SideBar: React.FC<SidebarProps> = ({ onTitleChange }) => {
         <Link
           to="#"
           className="text-black hover:text-blue-500 p-2 rounded"
+          onClick={() => {
+            localStorage.removeItem("admintoken");
+            window.location.href = "/admin"; // Redirect to login
+          }}
         >
           Log Out
         </Link>
