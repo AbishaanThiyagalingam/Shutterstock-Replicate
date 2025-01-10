@@ -1,44 +1,100 @@
-// Home.tsx
-import React from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import bgImage from "../../images/home-page-background.jpeg";
 
-const Home: React.FC = () => {
+const AdminHome: React.FC = () => {
+  const [userId, setUserId] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      const response = await axios.post("http://localhost:8080/admin/login", {
+        email: userId,
+        password,
+      });
+
+      const { token } = response.data;
+
+      // Store the token as admintoken
+      localStorage.setItem("admintoken", token);
+
+      // Redirect to the admin dashboard
+      navigate("/admin/dashboard");
+    } catch (err: any) {
+      // Handle error
+      const errorMessage =
+        err.response?.data?.message || "Unable to connect to the server. Please try again later.";
+      setError(errorMessage);
+    }
+  };
+
   return (
     <div
-      className="bg-cover bg-center h-screen"
-      style={{
-        backgroundImage:
-          "url('https://source.unsplash.com/random/1920x1080?landscape')",
-      }}
+      className="min-h-screen flex items-center justify-center bg-cover bg-center px-4"
+      style={{ backgroundImage: `url(${bgImage})` }}
     >
-      <div className="bg-black bg-opacity-50 h-full flex flex-col justify-center items-center text-center px-6">
-        <h2 className="text-sm md:text-lg text-gray-300 uppercase">
-          Free Stock Photos & Videos For Your Content
-        </h2>
-        <h1 className="text-4xl md:text-6xl font-bold text-white mt-4">
-          FIND YOUR BEST <span className="text-blue-400">4K DESTINATION</span>
+      <div className="bg-black bg-opacity-50 p-6 rounded-lg shadow-lg w-full max-w-sm sm:max-w-md">
+        <h1 className="text-white text-2xl sm:text-3xl font-bold text-center mb-4">
+          ButterStock
         </h1>
-        <div className="mt-8 relative w-full max-w-3xl">
-          <input
-            type="text"
-            placeholder="Search Your Photos & Videos"
-            className="w-full py-3 px-4 rounded-full text-black"
-          />
-          <button className="absolute right-2 top-2 bg-blue-500 text-white px-4 py-2 rounded-full">
-            <i className="fa-solid fa-search"></i>
-          </button>
-        </div>
-        <p className="text-gray-400 mt-4">
-          Trending · Minimal · Abstract · Landscape · Nature · B&W · Amoled
+        <p className="text-white text-center mb-6 text-sm sm:text-base">
+          Welcome, Admin
         </p>
-        <a
-          href="#"
-          className="text-gray-300 text-sm mt-4 hover:text-white underline"
-        >
-          Learn more about Terms & Conditions
-        </a>
+        {error && (
+          <div className="bg-red-500 text-white text-sm rounded-md p-2 mb-4">
+            {error}
+          </div>
+        )}
+        <form onSubmit={handleLogin}>
+          <div className="mb-4">
+            <label
+              className="block text-white text-sm font-medium mb-2"
+              htmlFor="userId"
+            >
+              User ID
+            </label>
+            <input
+              type="text"
+              id="userId"
+              placeholder="Enter Your ID"
+              value={userId}
+              onChange={(e) => setUserId(e.target.value)}
+              className="w-full p-2 sm:p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div className="mb-4">
+            <label
+              className="block text-white text-sm font-medium mb-2"
+              htmlFor="password"
+            >
+              Password
+            </label>
+            <input
+              type="password"
+              id="password"
+              placeholder="Enter Your Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full p-2 sm:p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div className="flex justify-center">
+            <button
+              type="submit"
+              className="bg-blue-500 text-white py-2 px-12 sm:px-16 rounded-lg font-medium hover:bg-blue-600 transition duration-300"
+            >
+              Login
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );
 };
 
-export default Home;
+export default AdminHome;

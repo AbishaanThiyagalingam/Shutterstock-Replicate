@@ -21,6 +21,7 @@ const authenticate = async (req, res, next) => {
         req.user = user; // Attach user info to the request
         next();
     } catch (error) {
+        logger.error(error);
         res.status(401).json({ message: 'Unauthorized: Invalid token' });
     }
 };

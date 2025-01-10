@@ -8,6 +8,11 @@ const userSchema = new mongoose.Schema(
             type: String, 
             unique: true 
         },
+        facebookId: { 
+            type: String,
+            default: null, 
+            // unique: true 
+        },
         name: { 
             type: String, 
             required: true 

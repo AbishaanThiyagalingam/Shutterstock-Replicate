@@ -1,16 +1,48 @@
-const Category = require("../models/Category");
 const multer = require("multer");
+const path = require("path");
+const Category = require("../models/Category");
+const fs = require("fs");
+
+// Create uploads directory if it doesn't exist
+if (!fs.existsSync("uploads")) {
+  fs.mkdirSync("uploads");
+}
 
 // Configure multer for file uploads
-const upload = multer({ dest: "uploads/" }); // Change "uploads/" to your desired directory
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/"); // Save files in the "uploads" directory
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`); // Unique file name with original extension
+  },
+});
 
-// Create a new category
+const upload = multer({
+  storage,
+  fileFilter: (req, file, cb) => {
+    logger.log("Multer File Received:", file); // Debug log
+    const fileTypes = /jpeg|jpg|png|gif|webp/;
+    const extname = fileTypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = fileTypes.test(file.mimetype);
+
+    if (extname && mimetype) {
+      return cb(null, true);
+    } else {
+      cb(new Error("Only images are allowed!"));
+    }
+  },
+});
+
+
+// create category
 exports.createCategory = async (req, res) => {
+  logger.log("File Received:", req.file); // Debug log
   const { name, description } = req.body;
-  const thumbnail = req.file ? req.file.path : null;
+  const thumbnail = req.file ? `uploads/${req.file.filename}` : null;
 
   if (!name || !description) {
-    return res.status(400).json({ error: "Name and description are required." });
+    return res.status(400).json({ message: "Name and description are required." });
   }
 
   try {
@@ -19,12 +51,16 @@ exports.createCategory = async (req, res) => {
       description,
       thumbnail,
     });
+    logger.log("Saving Category:", newCategory); // Debug log
     await newCategory.save();
     res.status(201).json(newCategory);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    logger.error("Error Creating Category:", error); // Debug log
+    res.status(400).json({ message: error.message });
   }
 };
+
+
 
 // Get all categories
 exports.getAllCategories = async (req, res) => {
@@ -32,45 +68,83 @@ exports.getAllCategories = async (req, res) => {
     const categories = await Category.find();
     res.status(200).json(categories);
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch categories." });
+    res.status(500).json({ message: "Failed to fetch categories." });
   }
 };
 
 // Update a category
 exports.updateCategory = async (req, res) => {
   const { name, description } = req.body;
-  const thumbnail = req.file ? req.file.path : null;
+  const thumbnail = req.file ? `uploads/${req.file.filename}` : null;
 
   if (!name || !description) {
-    return res.status(400).json({ error: "Name and description are required." });
+    return res.status(400).json({ message: "Name and description are required." });
   }
 
   try {
+    const updateData = { name, description, updatedAt: Date.now() };
+    if (thumbnail) {
+      updateData.thumbnail = thumbnail;
+    }
+
     const updatedCategory = await Category.findByIdAndUpdate(
       req.params.id,
-      { name, description, thumbnail, updatedAt: Date.now() },
+      updateData,
       { new: true }
     );
+
     if (!updatedCategory) {
-      return res.status(404).json({ error: "Category not found." });
+      return res.status(404).json({ message: "Category not found." });
     }
+
     res.status(200).json(updatedCategory);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(400).json({ message: error.message });
   }
 };
+
 
 // Delete a category
 exports.deleteCategory = async (req, res) => {
   try {
     const category = await Category.findByIdAndDelete(req.params.id);
     if (!category) {
-      return res.status(404).json({ error: "Category not found." });
+      return res.status(404).json({ message: "Category not found." });
     }
     res.status(200).json({ message: "Category deleted." });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(400).json({ message: error.message });
   }
+};
+
+// get image 
+exports.getImage = (req, res) => {
+  const filename = req.params.filename;
+  const filePath = path.resolve(__dirname, "../uploads", filename);
+
+  // Check if file exists
+  if (!fs.existsSync(filePath)) {
+    return res.status(404).json({ message: "Image not found." });
+  }
+
+  // Handle request abort
+  req.on('aborted', () => {
+    logger.error(`Request aborted while sending file: ${filename}`);
+  });
+
+  // Send the file
+  res.sendFile(filePath, (err) => {
+    if (err) {
+      if (err.code === 'ECONNABORTED') {
+        logger.error(`Request aborted for file: ${filename}`);
+        return;
+      }
+      logger.error("Error sending file:", err);
+      if (!res.headersSent) {
+        res.status(500).json({ message: "Failed to send image." });
+      }
+    }
+  });
 };
 
 // Export multer configuration

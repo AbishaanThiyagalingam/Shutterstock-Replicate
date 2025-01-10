@@ -3,14 +3,13 @@ const UserHistory = require('../models/UserHistory');
 // Get user history
 exports.getUserHistory = async (req, res) => {
     try {
-        // Fetch history for the logged-in user, sorted by most recent first
-        const history = await UserHistory.find({ userId: req.user.id }).sort({ timestamp: -1 });
+        const history = await UserHistory.find().sort({ timestamp: -1 });
         if (!history.length) {
             return res.status(404).json({ message: 'No history found for this user.' });
         }
         res.status(200).json(history);
     } catch (error) {
-        console.error('Error fetching user history:', error);
+        logger.error('Error fetching user history:', error);
         res.status(500).json({ message: 'An error occurred while fetching history.' });
     }
 };
@@ -33,7 +32,7 @@ exports.addUserHistory = async (req, res) => {
         await historyEntry.save();
         res.status(201).json({ message: 'User history entry added successfully!', historyEntry });
     } catch (error) {
-        console.error('Error adding user history:', error);
+        logger.error('Error adding user history:', error);
         res.status(500).json({ message: 'An error occurred while adding history.' });
     }
 };
@@ -49,7 +48,7 @@ exports.deleteUserHistory = async (req, res) => {
         }
         res.status(200).json({ message: 'User history entry deleted successfully.', deletedHistory });
     } catch (error) {
-        console.error('Error deleting user history:', error);
+        logger.error('Error deleting user history:', error);
         res.status(500).json({ message: 'An error occurred while deleting history.' });
     }
 };
@@ -62,7 +61,7 @@ exports.clearUserHistory = async (req, res) => {
         const deletedHistory = await UserHistory.deleteMany({ userId });
         res.status(200).json({ message: 'All user history cleared successfully.', deletedCount: deletedHistory.deletedCount });
     } catch (error) {
-        console.error('Error clearing user history:', error);
+        logger.error('Error clearing user history:', error);
         res.status(500).json({ message: 'An error occurred while clearing history.' });
     }
 };

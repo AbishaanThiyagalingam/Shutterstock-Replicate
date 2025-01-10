@@ -10,17 +10,25 @@
 
 // App.tsx
 import React from "react";
-import Header from "./user/components/Header";
-import Footer from "./user/components/Footer";
-import Home from "./user/pages/Home";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import UserApp from "./user/App"; // User-specific App
+import AdminApp from "./admin/app"; // Admin-specific App
+import SellerApp from "./seller/App"; // Seller-specific App
 
 const App: React.FC = () => {
   return (
-    <div>
-      <Header />
-      <Home />
-      <Footer />
-    </div>
+    <Router>
+      <Routes>
+        {/* Admin Layout */}
+        <Route path="/admin/*" element={<AdminApp />} />
+
+        {/* Seller Layout */}
+        <Route path="/seller/*" element={<SellerApp />} />
+
+        {/* User Layout */}
+        <Route path="/*" element={<UserApp />} />
+      </Routes>
+    </Router>
   );
 };
 

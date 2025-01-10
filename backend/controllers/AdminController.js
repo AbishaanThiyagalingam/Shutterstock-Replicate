@@ -1,4 +1,3 @@
-// controllers/AdminController.js
 const Admin = require('../models/Admin');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
@@ -18,7 +17,7 @@ exports.addAdmin = async (req, res) => {
 
         res.status(201).json({ message: 'Admin added successfully!', admin });
     } catch (error) {
-        console.error('Error adding admin:', error);
+        logger.error('Error adding admin:', error);
         res.status(500).json({ message: 'An error occurred while adding the admin.' });
     }
 };
@@ -45,7 +44,7 @@ exports.adminLogin = async (req, res) => {
 
         res.status(200).json({ token, admin: { id: admin._id, email: admin.email, role: admin.role } });
     } catch (error) {
-        console.error('Error logging in admin:', error);
+        logger.error('Error logging in admin:', error);
         res.status(500).json({ message: 'An error occurred while logging in.' });
     }
 };
@@ -56,7 +55,27 @@ exports.getAllAdmins = async (req, res) => {
         const admins = await Admin.find().select('-password'); // Exclude password
         res.status(200).json(admins);
     } catch (error) {
-        console.error('Error fetching admins:', error);
+          logger.error('Error fetching admins:', error);
         res.status(500).json({ message: 'An error occurred while fetching admins.' });
     }
 };
+
+// Get admin by ID
+exports.getAdminById = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // Find the admin by ID, excluding the password
+        const admin = await Admin.findById(id).select('-password');
+
+        if (!admin) {
+            return res.status(404).json({ message: 'Admin not found.' });
+        }
+
+        res.status(200).json(admin);
+    } catch (error) {
+        console.error('Error fetching admin:', error);
+        res.status(500).json({ message: 'An error occurred while retrieving the admin.' });
+    }
+};
+

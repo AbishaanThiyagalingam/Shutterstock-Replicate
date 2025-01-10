@@ -35,7 +35,7 @@ exports.adminAuthMiddleware = (allowedRoles) => {
             req.admin = admin;
             next();
         } catch (error) {
-            console.error('Authentication error:', error);
+            logger.error('Authentication error:', error);
             res.status(401).json({ message: 'Unauthorized: Invalid token' });
         }
     };
