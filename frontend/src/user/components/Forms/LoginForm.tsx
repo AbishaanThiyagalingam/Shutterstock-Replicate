@@ -21,38 +21,38 @@ const LoginForm: React.FC = () => {
     window.location.href = "http://localhost:8080/auth/facebook";
   };
 
-  const fetchGoogleToken = async () => {
-    try {
-        console.log("Attempting to fetch token...");
-        const response = await fetch("http://localhost:8080/auth/google/token", {
-            method: "GET",
-            credentials: "include", // Ensure cookies are sent
-        });
+//   const fetchGoogleToken = async () => {
+//     try {
+//         console.log("Attempting to fetch token...");
+//         const response = await fetch("http://localhost:8080/auth/google/token", {
+//             method: "GET",
+//             credentials: "include", // Ensure cookies are sent
+//         });
 
-        if (response.ok) {
-            const data = await response.json();
-            console.log("Token response data:", data);
+//         if (response.ok) {
+//             const data = await response.json();
+//             console.log("Token response data:", data);
 
-            if (data.token) {
-                // Store the token in localStorage
-                localStorage.setItem("token", data.token);
-                console.log("Token stored in localStorage:", data.token);
-                navigate("/profile");
-            } else {
-                console.error("Token not found in response:", data);
-            }
-        } else {
-            console.error(`Error fetching token: ${response.status}`);
-        }
-    } catch (error) {
-        console.error("Error while fetching token:", error);
-    }
-};
+//             if (data.token) {
+//                 // Store the token in localStorage
+//                 localStorage.setItem("token", data.token);
+//                 console.log("Token stored in localStorage:", data.token);
+//                 //navigate("/profile");
+//             } else {
+//                 console.error("Token not found in response:", data);
+//             }
+//         } else {
+//             console.error(`Error fetching token: ${response.status}`);
+//         }
+//     } catch (error) {
+//         console.error("Error while fetching token:", error);
+//     }
+// };
 
 
 React.useEffect(() => {
-  console.log("LoginForm mounted. Attempting to fetch token...");
-  fetchGoogleToken();
+  //console.log("LoginForm mounted. Attempting to fetch token...");
+  //fetchGoogleToken();
 }, []); // Empty dependency array ensures this runs only once
 
 

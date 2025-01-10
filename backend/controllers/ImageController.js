@@ -2,6 +2,7 @@ const path = require("path");
 const fs = require("fs");
 const Image = require("../models/Image");
 const Category = require("../models/Category");
+const logger = require('../logger');
 
 // Ensure upload directory exists
 const uploadDir = path.join(__dirname, '../uploads/images');

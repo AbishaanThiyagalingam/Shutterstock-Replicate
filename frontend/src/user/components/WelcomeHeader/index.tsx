@@ -7,6 +7,9 @@ import SignUpForm from "../Forms/SignUpForm";
 import UploadImageForm from "../Forms/UploadImageForm";
 
 const Header = () => {
+
+
+
   // Navbar toggle
   const [navbarOpen, setNavbarOpen] = useState(false);
   const navbarToggleHandler = () => {

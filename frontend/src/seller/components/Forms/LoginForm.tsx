@@ -18,7 +18,7 @@ const LoginForm: React.FC = () => {
 
     if (token) {
       localStorage.setItem("token", token);
-      navigate("/profile");
+      // navigate("/profile");
     }
   }, [navigate]);
 
