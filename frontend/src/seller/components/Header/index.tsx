@@ -125,7 +125,7 @@ const Header = () => {
                     }`}
                   >
                     <Link
-                      to="/account"
+                      to="/profile"
                       className="block py-2 text-sm text-black/70 hover:text-black"
                     >
                       Account
@@ -272,7 +272,7 @@ const Header = () => {
                   }`}
                 >
                   <Link
-                    to="/account"
+                    to="/profile"
                     className="block py-2 text-sm text-black/70 hover:text-black"
                   >
                     Account

@@ -6,17 +6,25 @@ import Footer from "./components/Footer/index";
 import Home from "./pages/Home";
 import ScrollToTop from "./components/ScrollToTop";
 import Welcome from "./pages/Welcome";
+import Profile from "../components/Profile";
 
 const UserApp: React.FC = () => {
   return (
     <div>
-      {location.pathname === "/welcome" ? <Header /> : <WelcomeHeader />}
+      {/* Conditionally render header */}
+      {location.pathname === "/" ? (
+        <WelcomeHeader />
+      ) : location.pathname !== "/profile" ? (
+        <Header />
+      ) : null}{" "}
       <Routes>
         <Route path="/" element={<Welcome />} />
         <Route path="/welcome" element={<Home />} />
+        <Route path="/profile" element={<Profile />} />
         {/* Add more user-specific routes here */}
       </Routes>
-      <Footer />
+      {/* Conditionally render header */}
+      {location.pathname !== "/profile" ? <Footer /> : null} 
       <ScrollToTop />
     </div>
   );

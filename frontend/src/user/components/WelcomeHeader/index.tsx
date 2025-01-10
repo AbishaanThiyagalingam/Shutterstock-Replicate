@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import menuData from "./menuData";
-import Modal from "../Modal/Modal";
+import Modal from "../../../components/Modal/Modal";
 import LoginForm from "../Forms/LoginForm";
 import SignUpForm from "../Forms/SignUpForm";
 import UploadImageForm from "../Forms/UploadImageForm";

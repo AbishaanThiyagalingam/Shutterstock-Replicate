@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import menuData from "./menuData";
-import Modal from "../Modal/Modal";
+import Modal from "../../../components/Modal/Modal";
 import LoginForm from "../Forms/LoginForm";
 import SignUpForm from "../Forms/SignUpForm";
 import UploadImageForm from "../Forms/UploadImageForm";
-import ConfirmationForm from "../Forms/ConfirmationForm";
+import ConfirmationForm from "../../../components/Forms/ConfirmationForm";
 import cart from "../../../images/cart.svg";
 import user from "../../../images/user.svg";
 
@@ -160,7 +160,7 @@ React.useEffect(() => {
                     }`}
                   >
                     <Link
-                      to="/account"
+                      to="/profile"
                       className="block py-2 text-sm text-white/70 hover:text-white"
                     >
                       Account
@@ -316,7 +316,7 @@ React.useEffect(() => {
                     }`}
                   >
                     <Link
-                      to="/account"
+                      to="/profile"
                       className="block py-2 text-sm text-white/70 hover:text-white"
                     >
                       Account
