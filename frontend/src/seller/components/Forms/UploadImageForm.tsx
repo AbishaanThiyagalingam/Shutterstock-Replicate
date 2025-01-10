@@ -233,12 +233,6 @@ const TwoStepUploadModal: React.FC = () => {
         return;
       }
 
-      // Process tags into an array
-      const tagsArray = tags
-        .split(",")
-        .map((tag) => tag.trim())
-        .filter((tag) => tag);
-
       const formData = new FormData();
       formData.append("image", image); // Use the File object
       formData.append("name", name);
@@ -266,6 +260,8 @@ const TwoStepUploadModal: React.FC = () => {
 
       setMessage(response.data.message || "Image uploaded successfully!");
     } catch (err) {
+      console.log(err);
+      setMessage(err.message);
       if (axios.isAxiosError(err)) {
         setMessage(
           err.response?.data?.message || "An error occurred during upload."

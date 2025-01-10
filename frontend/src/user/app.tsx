@@ -10,10 +10,10 @@ import Welcome from "./pages/Welcome";
 const UserApp: React.FC = () => {
   return (
     <div>
-      {location.pathname === "/welcome" ? <WelcomeHeader /> : <Header />}
+      {location.pathname === "/welcome" ? <Header /> : <WelcomeHeader />}
       <Routes>
-        <Route path="/welcome" element={<Welcome />} />
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Welcome />} />
+        <Route path="/welcome" element={<Home />} />
         {/* Add more user-specific routes here */}
       </Routes>
       <Footer />

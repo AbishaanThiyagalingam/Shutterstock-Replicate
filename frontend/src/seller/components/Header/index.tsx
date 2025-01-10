@@ -73,7 +73,7 @@ const Header = () => {
   const confirmModeChange = () => {
     setIsConfirmationOpen(false);
     if (isSellerMode) {
-      navigate("/"); // Navigate to base URL
+      navigate("/welcome"); // Navigate to base URL
     }
     setIsSellerMode(!isSellerMode);
   };
