@@ -29,21 +29,37 @@ const UserHistory: React.FC = () => {
     "USER BECAME A SELLER",
     "USER UPDATED PROFILE",
     "USER LOGGED OUT",
-  ];  
+  ];
 
   useEffect(() => {
     fetchUserHistory();
   }, []);
 
   const fetchUserHistory = async () => {
+    const token = localStorage.getItem("admintoken");
+
+    if (!token) {
+      console.error("No token found. User is not authenticated.");
+      return;
+    }
+
     try {
-      const response = await axios.get("http://localhost:8080/history");
+      // Fetch user history
+      const response = await axios.get("http://localhost:8080/history", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setUserHistory(response.data);
 
       // Fetch user details for each userId
       const userIds = [...new Set(response.data.map((item: UserHistoryItem) => item.userId))];
       const userDetailsPromises = userIds.map(async (userId) => {
-        const userResponse = await axios.get(`http://localhost:8080/auth/user/${userId}`);
+        const userResponse = await axios.get(`http://localhost:8080/auth/user/${userId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         return { userId, user: userResponse.data };
       });
 

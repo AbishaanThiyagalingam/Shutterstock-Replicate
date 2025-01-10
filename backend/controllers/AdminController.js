@@ -59,3 +59,23 @@ exports.getAllAdmins = async (req, res) => {
         res.status(500).json({ message: 'An error occurred while fetching admins.' });
     }
 };
+
+// Get admin by ID
+exports.getAdminById = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // Find the admin by ID, excluding the password
+        const admin = await Admin.findById(id).select('-password');
+
+        if (!admin) {
+            return res.status(404).json({ message: 'Admin not found.' });
+        }
+
+        res.status(200).json(admin);
+    } catch (error) {
+        console.error('Error fetching admin:', error);
+        res.status(500).json({ message: 'An error occurred while retrieving the admin.' });
+    }
+};
+

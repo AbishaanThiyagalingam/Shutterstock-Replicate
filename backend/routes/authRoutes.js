@@ -13,7 +13,7 @@ router.get('/facebook', authController.facebookLogin);
 router.get('/facebook/callback', authController.facebookCallback);
 
 router.get('/profile', authMiddleware.authenticate, authController.getUserProfile);
-router.get('/users',authController.getAllUsers);
+router.get('/users', authController.getAllUsers);
 router.get('/user/:id', authController.getUserById);
 router.delete('/users/:id', authController.deleteUser);
 router.post('/become-seller', authMiddleware.authenticate, authController.becomeSeller);
