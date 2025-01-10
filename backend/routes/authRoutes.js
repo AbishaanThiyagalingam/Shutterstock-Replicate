@@ -7,6 +7,8 @@ const router = express.Router();
 // google Login
 router.get('/google', authController.googleLogin);
 router.get('/google/callback', authController.googleCallback);
+router.get('/google/token', authController.getGoogleToken);
+
 
 // Facebook Login
 router.get('/facebook', authController.facebookLogin);

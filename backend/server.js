@@ -29,14 +29,24 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(bodyParser.json());
 
-// Session Configuration
 app.use(
   session({
-    secret: process.env.SESSION_SECRET || 'default_secret',
-    resave: false,
-    saveUninitialized: true,
+      secret: process.env.SESSION_SECRET || 'default_secret',
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+          httpOnly: true,
+          maxAge: 3600000, // 1 hour
+      },
   })
 );
+
+
+app.use((req, res, next) => {
+  console.log("Session Data:", req.session);
+  next();
+});
+
 
 // Initialize Passport.js
 app.use(passport.initialize());

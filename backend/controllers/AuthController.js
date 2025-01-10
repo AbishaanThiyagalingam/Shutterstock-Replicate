@@ -15,30 +15,46 @@ exports.googleLogin = passport.authenticate('google', { scope: ['profile', 'emai
 exports.googleCallback = (req, res, next) => {
     passport.authenticate('google', async (err, user) => {
         if (err || !user) {
-            logger.error('Authentication error:', err);
-            return res.redirect('http://localhost:3000/login?error=Authentication+Failed');
+            console.error('Authentication error:', err);
+            return res.redirect(`${process.env.FRONTEND_URL}/login?error=AuthenticationFailed`);
         }
 
         try {
-            // Generate JWT
+            // Generate the JWT token
             const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-            // Record history
             await UserHistory.create({
                 userId: user._id,
                 action: UserActivities.GOOGLE_LOGIN,
                 metadata: { googleId: user.googleId },
             });
 
-            // Redirect to frontend with token and user ID in the query params
-            const redirectUrl = `http://localhost:3000/profile?token=${token}&id=${user._id}`;
-            res.redirect(redirectUrl);
+            // Store the token in the session
+            req.session.token = token;
+
+            console.log("Token stored in session:", token);
+
+            // Redirect to frontend success page
+            res.redirect(`${process.env.FRONTEND_URL}/welcome`);
         } catch (error) {
-            logger.error('Error generating token:', error);
-            res.redirect('http://localhost:3000/login?error=Server+Error');
+            console.error('Error generating token:', error);
+            return res.redirect(`${process.env.FRONTEND_URL}/login?error=ServerError`);
         }
     })(req, res, next);
 };
+
+
+exports.getGoogleToken = (req, res) => {
+    if (!req.session.token) {
+        console.log("Token not found in session:", req.session);
+        return res.status(401).json({ error: 'No token available. User might not be authenticated.' });
+    }
+
+    console.log("Token retrieved from session:", req.session.token);
+    res.status(200).json({ token: req.session.token });
+};
+
+
 
 // exports.googleCallback = (req, res, next) => {
 //     passport.authenticate('google', async (err, user) => {
