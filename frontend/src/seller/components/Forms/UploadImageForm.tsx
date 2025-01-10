@@ -171,6 +171,7 @@ import React, { useState } from "react";
 import { FaTrash, FaArrowRight, FaArrowLeft } from "react-icons/fa";
 import axios from "axios";
 import MultiSelectDropdown from "./MultiSelectDropdown";
+import TagsInput from "./TagsInput";
 
 const TwoStepUploadModal: React.FC = () => {
   const [step, setStep] = useState(1);
@@ -179,7 +180,7 @@ const TwoStepUploadModal: React.FC = () => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState<number | null>(null);
-  const [tags, setTags] = useState("");
+  const [tags, setTags] = useState<string[]>([]);
   const [takenBy, setTakenBy] = useState("");
   const [message, setMessage] = useState("");
 
@@ -243,7 +244,7 @@ const TwoStepUploadModal: React.FC = () => {
       formData.append("name", name);
       formData.append("description", description);
       formData.append("price", price.toString());
-      formData.append("tags", JSON.stringify(tagsArray));
+      formData.append("tags", JSON.stringify(tags));
       // formData.append("takenBy", takenBy);
       formData.append("categories", JSON.stringify(selectedCategories));
 
@@ -418,21 +419,8 @@ const TwoStepUploadModal: React.FC = () => {
               />
             </div>
 
-            <div className="col-span-1">
-              <label
-                htmlFor="tags"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Tags
-              </label>
-              <input
-                type="text"
-                id="tags"
-                placeholder="Enter Tags"
-                value={tags}
-                onChange={(e) => setTags(e.target.value)}
-                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-              />
+            <div className="col-span-1 md:col-span-2">
+              <TagsInput tags={tags} setTags={setTags} />
             </div>
             <div className="col-span-1">
               <label
