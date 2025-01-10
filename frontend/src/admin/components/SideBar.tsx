@@ -53,7 +53,7 @@ const SideBar: React.FC<SidebarProps> = ({ onTitleChange }) => {
       <h1 className="text-2xl font-bold mb-6">ButterStock</h1>
       <div className="mb-8">
         <img
-          src="https://via.placeholder.com/50"
+          src="https://cdn.pixabay.com/photo/2021/07/02/04/48/user-6380868_1280.png"
           alt="User Avatar"
           className="w-12 h-12 rounded-full mb-2"
         />
