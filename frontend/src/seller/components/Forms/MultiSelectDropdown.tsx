@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-
-const categories = ["Nature", "Abstract", "Portrait", "Landscape"];
+import axios from "axios";
 
 interface MultiSelectDropdownProps {
   selectedCategories: string[];
@@ -12,7 +11,25 @@ const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
   setSelectedCategories,
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [error, setError] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Fetch categories from the backend
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/categories");
+        const fetchedCategories = response.data.map((category: any) => category.name);
+        setCategories(fetchedCategories);
+      } catch (err) {
+        console.error("Failed to fetch categories:", err);
+        setError("Failed to load categories");
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   const toggleDropdown = () => {
     setIsDropdownOpen((prev) => !prev);
@@ -66,24 +83,30 @@ const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
       {isDropdownOpen && (
         <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg">
           <div className="p-2 max-h-40 overflow-y-auto">
-            {categories.map((category) => (
-              <div key={category} className="flex items-center mb-2">
-                <input
-                  type="checkbox"
-                  id={category}
-                  value={category}
-                  checked={selectedCategories.includes(category)}
-                  onChange={() => handleCategoryChange(category)}
-                  className="h-4 w-4 text-black border-gray-300 rounded focus:ring-blue-500"
-                />
-                <label
-                  htmlFor={category}
-                  className="ml-2 text-sm font-light text-gray-700"
-                >
-                  {category}
-                </label>
-              </div>
-            ))}
+            {categories.length === 0 && !error ? (
+              <p className="text-sm text-gray-500">Loading...</p>
+            ) : error ? (
+              <p className="text-sm text-red-500">{error}</p>
+            ) : (
+              categories.map((category) => (
+                <div key={category} className="flex items-center mb-2">
+                  <input
+                    type="checkbox"
+                    id={category}
+                    value={category}
+                    checked={selectedCategories.includes(category)}
+                    onChange={() => handleCategoryChange(category)}
+                    className="h-4 w-4 text-black border-gray-300 rounded focus:ring-blue-500"
+                  />
+                  <label
+                    htmlFor={category}
+                    className="ml-2 text-sm font-light text-gray-700"
+                  >
+                    {category}
+                  </label>
+                </div>
+              ))
+            )}
           </div>
         </div>
       )}

@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import Header from "../components/Header";
 import Modal from "../components/Modal/Modal";
-import UploadImageForm from "../components/Forms/UploadImageForm";
+import TwoStepUploadModal from "../components/Forms/UploadImageForm";
 import bgImage from "../../images/seller-home-page-background.jpg";
 
 const Home: React.FC = () => {
@@ -69,7 +69,7 @@ const Home: React.FC = () => {
         isOpen={isImageModalOpen}
         onClose={() => setIsImageModalOpen(false)}
       >
-        <UploadImageForm />
+        <TwoStepUploadModal onClose={() => setIsImageModalOpen(false)} />
       </Modal>
     </>
   );

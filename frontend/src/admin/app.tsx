@@ -8,6 +8,7 @@ import UserManagement from "./pages/UserManagement";
 import Dashboard from "./pages/Dashboard";
 import SideBar from "../admin/components/Sidebar";
 import Header from "../admin/components/Header";
+import AdminManagement from "./pages/AdminManagement";
 
 const AdminApp: React.FC = () => {
   const [title, setTitle] = useState("Dashboard"); // State to manage header title
@@ -36,6 +37,8 @@ const AdminApp: React.FC = () => {
           <Route path="/category" element={<CategoryManagement />} />
           <Route path="/user" element={<UserManagement />} />
           <Route path="/image" element={<ImageManagement />} />
+          <Route path="/manage-admin" element={<AdminManagement />} />
+
           {/* Add more admin-specific routes here */}
         </Routes>
       </div>

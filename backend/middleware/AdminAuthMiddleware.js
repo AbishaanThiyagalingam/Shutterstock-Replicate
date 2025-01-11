@@ -2,7 +2,7 @@
 const jwt = require('jsonwebtoken');
 const Admin = require('../models/Admin');
 const Roles = require('../utils/AdminRoles');
-
+const logger =require ('../logger');
 // Middleware to restrict access to specific roles or allow all
 exports.adminAuthMiddleware = (allowedRoles) => {
     return async (req, res, next) => {

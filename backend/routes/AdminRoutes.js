@@ -8,5 +8,7 @@ router.post('/', adminAuthMiddleware([Roles.SUPER_ADMIN]), adminController.addAd
 router.post('/login', adminController.adminLogin);
 router.get('/', adminAuthMiddleware([Roles.ALL_ACCESS, Roles.ADMIN]), adminController.getAllAdmins);
 router.get('/:id', adminAuthMiddleware([Roles.ALL_ACCESS]), adminController.getAdminById);
+router.put('/:id', adminAuthMiddleware([Roles.SUPER_ADMIN]), adminController.updateAdmin);
+router.delete('/:id', adminAuthMiddleware([Roles.SUPER_ADMIN]), adminController.deleteAdmin);
 
 module.exports = router;
