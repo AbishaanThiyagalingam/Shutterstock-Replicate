@@ -137,6 +137,7 @@ import visibleIcon from "../images/visible-eye.svg";
 import hiddenIcon from "../images/hidden-eye.svg";
 import Modal from "../components/Modal/Modal";
 import ResetPasswordForm from "../components/Forms/ResetPasswordForm";
+import InvoiceForm from "../components/Forms/InvoiceForm";
 import PlaceHolder from "../images/home-page-background.jpeg";
 
 const Profile: React.FC = () => {
@@ -159,6 +160,7 @@ const Profile: React.FC = () => {
   };
 
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+  const [isInvoiceModalOpen, setIsnvoiceModalOpen] = useState(false);
 
   const [visibleDownloads, setVisibleDownloads] = useState(10);
 
@@ -360,14 +362,6 @@ const Profile: React.FC = () => {
                 Delete Account
               </button>
             </div>
-
-            {/* Modal for Reset Password */}
-            <Modal
-              isOpen={isPasswordModalOpen}
-              onClose={() => setIsPasswordModalOpen(false)}
-            >
-              <ResetPasswordForm />
-            </Modal>
           </div>
         );
 
@@ -382,7 +376,7 @@ const Profile: React.FC = () => {
                     isMobileView || isTabletView
                       ? "flex-row items-start"
                       : "flex-row items-center"
-                  } justify-between p-4 bg-gray-50 rounded-lg hover:shadow-md`}
+                  } justify-between p-4 bg-white rounded-lg hover:shadow-md`}
                 >
                   {/* Image */}
                   <div
@@ -473,7 +467,7 @@ const Profile: React.FC = () => {
                     isMobileView || isTabletView
                       ? "flex-row items-start"
                       : "flex-row items-center"
-                  } justify-between p-4 bg-gray-50 rounded-lg hover:shadow-md`}
+                  } justify-between p-4 bg-white rounded-lg hover:shadow-md`}
                 >
                   {/* Image */}
                   <div
@@ -540,7 +534,10 @@ const Profile: React.FC = () => {
                           : "w-[15%] text-right"
                       }`}
                     >
-                      <button className="pr-4 text-sm font-medium text-black underline hover:text-black/50 transition">
+                      <button
+                        className="pr-4 text-sm font-medium text-black underline hover:text-black/50 transition"
+                        onClick={() => setIsnvoiceModalOpen(true)} // Open modal for password
+                      >
                         Invoice
                       </button>
                     </div>
@@ -587,7 +584,7 @@ const Profile: React.FC = () => {
                 }`}
               >
                 {/* Basic Plan */}
-                <div className="bg-gray-50 rounded-lg shadow-lg p-6">
+                <div className="bg-white rounded-lg shadow-lg p-6">
                   <div className="top-0 left-0 w-full flex">
                     <div className="bg-blue-100 px-4 py-0.5 rounded-[20px]">
                       <h3 className="text-lg font-medium text-blue-600">
@@ -595,7 +592,7 @@ const Profile: React.FC = () => {
                       </h3>
                     </div>
                   </div>
-                  <p className="text-3xl font-bold mt-4">
+                  <p className="text-5xl font-semibold mt-4">
                     $70
                     <span className="text-lg font-medium text-gray-500">
                       /month
@@ -605,7 +602,7 @@ const Profile: React.FC = () => {
                     Just using this for yourself? Lite is the way to go for the
                     lite platform.
                   </p>
-                  <button className="mt-6 w-full px-4 py-2 bg-black text-white font-medium rounded-md hover:bg-gray-800 transition">
+                  <button className="mt-6 w-full px-4 py-2 bg-black text-white font-medium rounded-md hover:bg-black/70 transition">
                     Select Lite
                   </button>
                   <ul className="mt-6 space-y-2 text-left">
@@ -664,7 +661,7 @@ const Profile: React.FC = () => {
                 </div>
 
                 {/* Standard Plan */}
-                <div className="bg-gray-50 rounded-lg shadow-lg p-6">
+                <div className="bg-white rounded-lg shadow-lg p-6">
                   <div className="top-0 left-0 w-full flex">
                     <div className="bg-pink-100 px-4 py-0.5 rounded-[20px]">
                       <h3 className="text-lg font-medium text-pink-600">
@@ -672,7 +669,7 @@ const Profile: React.FC = () => {
                       </h3>
                     </div>
                   </div>
-                  <p className="text-3xl font-bold mt-4">
+                  <p className="text-5xl font-semibold mt-4">
                     $190
                     <span className="text-lg font-medium text-gray-500">
                       /month
@@ -682,7 +679,7 @@ const Profile: React.FC = () => {
                     Just using this for yourself? Pro is the way to go for the
                     lite platform.
                   </p>
-                  <button className="mt-6 w-full px-4 py-2 bg-black text-white font-medium rounded-md hover:bg-gray-800 transition">
+                  <button className="mt-6 w-full px-4 py-2 bg-black text-white font-medium rounded-md hover:bg-black/70 transition">
                     Select Pro
                   </button>
                   <ul className="mt-6 space-y-2 text-left">
@@ -741,7 +738,7 @@ const Profile: React.FC = () => {
                 </div>
 
                 {/* Premium Plan */}
-                <div className="bg-gray-50 rounded-lg shadow-lg p-6">
+                <div className="bg-white rounded-lg shadow-lg p-6">
                   <div className="top-0 left-0 w-full flex">
                     <div className="bg-green-100 px-4 py-0.5 rounded-[20px]">
                       <h3 className="text-lg font-medium text-green-600">
@@ -749,7 +746,7 @@ const Profile: React.FC = () => {
                       </h3>
                     </div>
                   </div>
-                  <p className="text-3xl font-bold mt-4">
+                  <p className="text-5xl font-semibold mt-4">
                     $310
                     <span className="text-lg font-medium text-gray-500">
                       /month
@@ -759,7 +756,7 @@ const Profile: React.FC = () => {
                     Just using this for yourself? Premium is the way to go for
                     the lite platform.
                   </p>
-                  <button className="mt-6 w-full px-4 py-2 bg-black text-white font-medium rounded-md hover:bg-gray-800 transition">
+                  <button className="mt-6 w-full px-4 py-2 bg-black text-white font-medium rounded-md hover:bg-black/70 transition">
                     Select Premium
                   </button>
                   <ul className="mt-6 space-y-2 text-left">
@@ -927,6 +924,14 @@ const Profile: React.FC = () => {
         onClose={() => setIsPasswordModalOpen(false)}
       >
         <ResetPasswordForm />
+      </Modal>
+
+      {/* Modal for Reset Password */}
+      <Modal
+        isOpen={isInvoiceModalOpen}
+        onClose={() => setIsnvoiceModalOpen(false)}
+      >
+        <InvoiceForm />
       </Modal>
 
       <BuyerFooter />
